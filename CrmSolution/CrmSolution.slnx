@@ -1,2 +1,12 @@
 <Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Crm.Business/Crm.Business.csproj" />
+    <Project Path="src/Crm.Data/Crm.Data.csproj" />
+    <Project Path="src/Crm.Domain/Crm.Domain.csproj" />
+    <Project Path="src/Crm.Jobs/Crm.Jobs.csproj" />
+    <Project Path="src/Crm.Web/Crm.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Crm.Tests/Crm.Tests.csproj" />
+  </Folder>
 </Solution>
