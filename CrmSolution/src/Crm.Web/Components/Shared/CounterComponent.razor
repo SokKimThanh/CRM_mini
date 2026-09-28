@@ -1,0 +1,7 @@
+<MudChip T="string" Color="MudBlazor.Color.Info" Size="MudBlazor.Size.Large" Icon="@Icons.Material.Filled.TouchApp">
+    Đã bấm: <strong>@Count</strong> lần (State in-memory server)
+</MudChip>
+@code {
+    [Parameter]
+    public int Count { get; set; }
+}

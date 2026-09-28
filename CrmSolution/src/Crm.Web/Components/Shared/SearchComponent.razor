@@ -1,0 +1,24 @@
+@if (Results == null || !Results.Any())
+{
+    <MudText Color="MudBlazor.Color.Default" Typo="Typo.body2" Class="fst-italic pa-2">
+        Không tìm thấy kết quả phù hợp.
+    </MudText>
+}
+else
+{
+    <MudPaper Elevation="0" Outlined="true">
+        <MudList T="string" Dense="true">
+            @foreach (var item in Results)
+            {
+                <MudListItem T="string" Icon="@Icons.Material.Filled.Business">
+                    @item
+                </MudListItem>
+            }
+        </MudList>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public List<string>? Results { get; set; }
+}

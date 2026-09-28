@@ -1,0 +1,10 @@
+@if (!string.IsNullOrEmpty(Message))
+{
+    <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Dense="true" Class="my-2">
+        <strong>Thành công!</strong> @Message
+    </MudAlert>
+}
+@code {
+    [Parameter]
+    public string? Message { get; set; }
+}
