@@ -17,6 +17,6 @@ Dự án áp dụng quy trình quản lý mã nguồn tự động, bao gồm 4 
 
 ## 2. Tài liệu Dự án
 Để giữ cho file README này ngắn gọn, toàn bộ tài liệu chi tiết (SRS, Kế hoạch) đã được tách nhỏ và chuyển vào thư mục `docs/`. Bạn có thể tham khảo theo cấu trúc sau:
-- Mọi tài liệu đặc tả, tiến trình công việc, thiết kế hệ thống xem tại: [Thư mục Documents](./Documents)
+- Mọi tài liệu đặc tả, tiến trình công việc, thiết kế hệ thống xem tại: [Thư mục docs](./docs)
 
 *(Ghi chú: Theo Kỹ năng K9, README.md luôn được giữ ngắn gọn dưới 1 trang. Mọi thông tin dài hơn sẽ được cắt vào thư mục `docs/`)*
