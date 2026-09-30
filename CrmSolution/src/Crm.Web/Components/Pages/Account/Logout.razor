@@ -1,0 +1,23 @@
+@page "/logout"
+@layout EmptyLayout
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+
+<PageTitle>Đang đăng xuất...</PageTitle>
+
+<div style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+    <div class="text-center">
+        <MudProgressCircular Color="MudBlazor.Color.Primary" Indeterminate="true" Size="MudBlazor.Size.Large" />
+        <MudText Typo="MudBlazor.Typo.h6" Class="mt-3">Đang đăng xuất...</MudText>
+    </div>
+</div>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("crmAuth.logout");
+        }
+    }
+}

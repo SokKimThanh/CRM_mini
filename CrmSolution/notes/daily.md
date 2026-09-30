@@ -66,3 +66,28 @@
 - Tích hợp **ASP.NET Core Identity** vào dự án `Crm.Web`.
 - Cấu hình Authentication/Authorization (Cookie, JWT nếu cần).
 - Tạo luồng Login, Logout, Quản lý Roles (Admin, Sales, Manager).
+
+# Daily Log — Day 3 / Sprint 1
+
+## Done
+- [x] ApplicationUser, UserProfile, Team entities
+- [x] AppDbContext với 2 DbSet (UserProfile, Team)
+- [x] 7 bảng Identity + user_profiles + teams trong DB
+- [x] 5 FK constraints
+- [x] Seed 4 roles + 5 users
+- [x] Trang Login MudBlazor hiển thị đẹp
+- [x] Login/Logout qua MVC Controller + JS Interop
+- [x] AuthorizeRouteView bảo vệ toàn app
+- [x] Test login admin@crm.local / Admin@2026: PASS
+
+## Credentials
+- Admin:       admin@crm.local / Admin@2026
+- Sales 1:     sales1@crm.local / Sales@2026
+- Sales 2:     sales2@crm.local / Sales@2026
+- Manager:     manager@crm.local / Manager@2026
+- Accountant:  accountant@crm.local / Acc@2026
+
+## Next Steps (Day 4)
+- Scaffold 16 entities từ database bằng dotnet-ef
+- Thêm DbSet vào AppDbContext
+- Seed data demo (customers, opportunities, ...)

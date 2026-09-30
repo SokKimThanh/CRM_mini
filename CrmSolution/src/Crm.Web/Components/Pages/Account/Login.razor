@@ -1,0 +1,123 @@
+@page "/login"
+@layout EmptyLayout
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+@inject ILogger<Login> Logger
+
+<PageTitle>Đăng nhập — CRM System</PageTitle>
+
+<div
+    style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <MudPaper Class="pa-8" Elevation="8" Style="width: 100%; max-width: 420px; border-radius: 16px;">
+        <div class="text-center mb-6">
+            <MudIcon Icon="@Icons.Material.Filled.BusinessCenter" Color="MudBlazor.Color.Primary"
+                     Style="font-size: 56px;" />
+            <MudText Typo="MudBlazor.Typo.h4" Class="mt-3">CRM System</MudText>
+            <MudText Typo="MudBlazor.Typo.body2" Color="MudBlazor.Color.Secondary">Đăng nhập vào hệ thống</MudText>
+        </div>
+
+        <EditForm Model="@model" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <MudTextField @bind-Value="model.Email" Label="Email" Variant="Variant.Outlined" InputType="InputType.Email"
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Email" Class="mb-3"
+                          Disabled="@isProcessing" />
+
+            <MudTextField @bind-Value="model.Password" Label="Mật khẩu" Variant="Variant.Outlined"
+                          InputType="InputType.Password" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Lock"
+                          Class="mb-3" Disabled="@isProcessing" />
+
+            <MudCheckBox @bind-Value="model.RememberMe" Label="Ghi nhớ đăng nhập" Color="MudBlazor.Color.Primary"
+                         Class="mb-3" />
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <MudAlert Severity="MudBlazor.Severity.Error" Class="mb-3" Dense="true">
+                    @errorMessage
+                </MudAlert>
+            }
+
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="MudBlazor.Color.Primary"
+                       FullWidth="true" Size="MudBlazor.Size.Large" Disabled="@isProcessing" Class="mb-3">
+                @if (isProcessing)
+                {
+                    <MudProgressCircular Size="MudBlazor.Size.Small" Indeterminate="true" Class="mr-2" />
+                    <span>Đang xử lý...</span>
+                }
+                else
+                {
+                    <span>Đăng nhập</span>
+                }
+            </MudButton>
+        </EditForm>
+
+        <MudDivider Class="my-4" />
+
+        <MudText Typo="MudBlazor.Typo.caption" Align="MudBlazor.Align.Center" Color="MudBlazor.Color.Secondary">
+            © @DateTime.Now.Year CRM System
+        </MudText>
+    </MudPaper>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    private LoginModel model = new();
+    private string? errorMessage;
+    private bool isProcessing = false;
+
+    private async Task HandleLogin()
+    {
+        isProcessing = true;
+        errorMessage = null;
+
+        try
+        {
+            var result = await JS.InvokeAsync<LoginResponse>(
+                "crmAuth.login",
+                model.Email,
+                model.Password,
+                model.RememberMe,
+                ReturnUrl ?? "/");
+
+            if (result.Success)
+            {
+                Navigation.NavigateTo(result.Redirect ?? "/", forceLoad: true);
+            }
+            else
+            {
+                errorMessage = result.Error ?? "Đăng nhập thất bại.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Có lỗi xảy ra, vui lòng thử lại.";
+            Logger.LogError(ex, "Login error");
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    public class LoginResponse
+    {
+        public bool Success { get; set; }
+        public string? Redirect { get; set; }
+        public string? Error { get; set; }
+    }
+
+    public class LoginModel
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Email không được để trống")]
+        [System.ComponentModel.DataAnnotations.EmailAddress(ErrorMessage = "Email không đúng định dạng")]
+        public string Email { get; set; } = string.Empty;
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Mật khẩu không được để trống")]
+        public string Password { get; set; } = string.Empty;
+
+        public bool RememberMe { get; set; }
+    }
+}
