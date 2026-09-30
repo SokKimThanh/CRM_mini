@@ -1,0 +1,24 @@
+-- File: docs/db/01a_fix_user_id_types.sql
+BEGIN;
+ALTER TABLE customers
+ALTER COLUMN assigned_to_user_id TYPE UUID USING NULL;
+ALTER TABLE customer_assignments
+ALTER COLUMN from_user_id TYPE UUID USING NULL,
+ALTER COLUMN to_user_id TYPE UUID USING NULL,
+ALTER COLUMN assigned_by TYPE UUID USING NULL;
+ALTER TABLE opportunities
+ALTER COLUMN assigned_to_user_id TYPE UUID USING NULL;
+ALTER TABLE stage_histories
+ALTER COLUMN changed_by_user_id TYPE UUID USING NULL;
+ALTER TABLE quotes
+ALTER COLUMN created_by_user_id TYPE UUID USING NULL,
+ALTER COLUMN approved_by TYPE UUID USING NULL;
+ALTER TABLE sales_tasks
+ALTER COLUMN assigned_to_user_id TYPE UUID USING NULL,ALTER COLUMN completed_by TYPE UUID USING NULL;
+ALTER TABLE interactions
+ALTER COLUMN user_id TYPE UUID USING NULL;
+ALTER TABLE notifications
+ALTER COLUMN user_id TYPE UUID USING NULL;
+ALTER TABLE audit_logs
+ALTER COLUMN user_id TYPE UUID USING NULL;
+COMMIT
