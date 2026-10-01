@@ -5,15 +5,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Crm.Data;
 
-public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+public class AppIdentityDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options)
+    public AppIdentityDbContext(DbContextOptions<AppIdentityDbContext> options)
         : base(options)
     {
     }
 
-    public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
-    public DbSet<Team> Teams => Set<Team>();
+    // Chỉ giữ lại thực thể liên quan trực tiếp đến tài khoản người dùng
+    public virtual DbSet<UserProfile> UserProfiles { get; set; }
+    public virtual DbSet<Team> Teams { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -37,7 +38,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
             entity.Property(u => u.CreatedAt).HasColumnName("created_at");
             entity.Property(u => u.UpdatedAt).HasColumnName("updated_at");
 
-            // Quan hệ 1-1: UserProfile.UserId là FK → ApplicationUser.Id (dùng navigation property)
+            // Quan hệ 1-1: UserProfile.UserId là FK → ApplicationUser.Id
             entity.HasOne(u => u.User)
                 .WithOne()
                 .HasForeignKey<UserProfile>(u => u.UserId)
@@ -45,7 +46,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
 
             // Quan hệ với Team
             entity.HasOne(u => u.Team)
-                .WithMany()
+                .WithMany(t => t.UserProfiles)
                 .HasForeignKey(u => u.TeamId)
                 .OnDelete(DeleteBehavior.SetNull);
         });

@@ -12,7 +12,7 @@ public static class DbSeeder
         using var scope = services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
         var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
         var logger = loggerFactory.CreateLogger("DbSeeder");
 
@@ -79,7 +79,7 @@ public static class DbSeeder
 
     private static async Task SeedDemoUsersAsync(
         UserManager<ApplicationUser> userManager,
-        AppDbContext dbContext,
+        AppIdentityDbContext dbContext,
         ILogger logger)
     {
         var demoUsers = new[]
