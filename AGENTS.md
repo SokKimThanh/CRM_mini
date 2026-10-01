@@ -21,10 +21,13 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 
 ## BLOCK 2: [AGILE_WORKFLOW] - QUY TRÌNH QUẢN LÝ DỰ ÁN
 
-**[K2] System Thinking (Tư Duy Hệ Thống)**
-- `THUMB_RULE`: KHÔNG BẮT TAY VÀO CODE NGAY nếu tính năng có thể ảnh hưởng diện rộng.
-- `TRIGGER`: User yêu cầu tính năng mới liên quan tới Database hoặc UI lớn.
-- `ACTION`: Quét DB xem có phá vỡ liên kết bảng cũ không. Đề xuất liên kết mới cho người dùng trước khi code.
+**[K2] System Thinking (Tư Duy Hệ Thống - "Nói ít hiểu nhiều")**
+- `THUMB_RULE`: KHÔNG BẮT TAY VÀO LÀM NGAY (Code/Docs) nếu chưa nắm rõ bức tranh tổng thể. Hệ thống hóa thông tin trước khi hành động.
+- `TRIGGER`: User yêu cầu tính năng, viết tài liệu hoặc xử lý luồng logic có ảnh hưởng diện rộng.
+- `ACTION`:
+  1. Tự động đọc Master Plan/Roadmap (trong `docs/`) và quét DB để xác định dự án đang ở giai đoạn nào (Sprint mấy).
+  2. Bắt mạch bối cảnh: Tự hỏi "Việc này có nằm trong mục tiêu giai đoạn hiện tại không? Có phá vỡ cấu trúc cũ không?".
+  3. Chỉ hỏi/đề xuất lại người dùng bằng các câu ngắn gọn, trúng đích, đưa ra 1-2 tùy chọn cụ thể. Tuyệt đối không giải thích dài dòng quá trình mình đã phân tích.
 
 **[K3] Auto-Prompting (Tự động chia nhỏ task)**
 - `THUMB_RULE`: Mọi task phải được băm nhỏ thành các "Phiên làm việc" < 30 phút.
@@ -35,6 +38,14 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 - `THUMB_RULE`: Phải minh bạch về code tạm, mã rác.
 - `TRIGGER`: Cuối mỗi task hoặc khi để lại TODO/Hardcode.
 - `ACTION`: Tự động tạo hoặc append báo cáo vào `docs/sprints/sprint_<X>/tech_debt_report.md`.
+
+**[K14] Context-First Verification (Bắt mạch dự án)**
+- `THUMB_RULE`: CẤM NHẮM MẮT LÀM BỪA khi nhận một yêu cầu chung chung. Phải định vị được Context trước khi thực thi.
+- `TRIGGER`: Khi User giao một task thiếu ngữ cảnh (vd: "Viết Runbook", "Tạo API", "Sửa bug").
+- `ACTION`:
+  1. Tự động tra cứu hệ thống (`list_files`, `README`, Master Plan).
+  2. Không báo cáo dài dòng về quá trình tra cứu.
+  3. Dùng ngôn ngữ đơn giản chốt lại 1-2 tùy chọn thực thi thực tế nhất với người dùng (vd: "Em thấy dự án có 7 Sprints, anh muốn làm Sprint 1 hay 2?").
 
 ---
 
@@ -54,10 +65,13 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 
 ## BLOCK 4: [DOCUMENTATION_RULES] - QUẢN LÝ TÀI LIỆU
 
-**[K6] Append-Only & Document Continuity (Ghi nối tiếp)**
-- `THUMB_RULE`: CẤM TUYỆT ĐỐI ghi đè (Overwrite) hoặc xóa trắng tài liệu cũ.
-- `TRIGGER`: Khi cập nhật SRS, Runbook, API Docs.
-- `ACTION`: Đọc hiểu file cũ, dùng phương pháp thêm nội dung (Append/Insert) vào cuối mục lục phù hợp.
+**[K6] Append-Only & Document Continuity (Ghi nối tiếp - "Nói ít làm nhiều")**
+- `THUMB_RULE`: CẤM TUYỆT ĐỐI ghi đè (Overwrite) hoặc xóa trắng tài liệu cũ. Mọi tài liệu sinh mới phải kế thừa và trích dẫn tài liệu gốc.
+- `TRIGGER`: Khi cập nhật SRS, Runbook, API Docs, hoặc tạo tài liệu mới.
+- `ACTION`:
+  1. Khi cập nhật: Đọc hiểu file cũ, dùng phương pháp thêm nội dung (Append/Insert) vào cuối mục lục phù hợp.
+  2. Khi tạo mới: Bắt buộc trích dẫn (link ngược) về tài liệu Master Plan/Tiến trình. Nội dung không được tự phịa thêm scope mới.
+  3. Viết trực diện: Đi thẳng vào các bước thực thi (Actionable steps). Không sinh ra các câu văn template sáo rỗng, dài dòng (Kế thừa K1).
 
 **[K7] Archiving (Dọn dẹp Tài liệu cổ đại)**
 - `THUMB_RULE`: Tài liệu sai lệch code phải bị cô lập.
