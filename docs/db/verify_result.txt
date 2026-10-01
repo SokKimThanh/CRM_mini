@@ -1,0 +1,34 @@
+     table_name     | count_val | target_val 
+--------------------+-----------+------------
+ Customers          |        20 |         20
+ Contacts           |        30 |         30
+ Products           |        20 |         20
+ Opportunities      |        15 |         15
+ Stage Histories    |        45 |         45
+ Assigned Customers |        20 |         20
+(6 rows)
+
+ stage_id |   stage_name    | opp_count | total_value  
+----------+-----------------+-----------+--------------
+        1 | Mới tiếp cận    |         2 |  80000000.00
+        2 | Đang liên hệ    |         3 | 161000000.00
+        3 | Đã gửi báo giá  |         3 | 129000000.00
+        4 | Đang đàm phán   |         3 | 495000000.00
+        5 | Chốt thành công |         2 |  63000000.00
+        6 | Thất bại        |         2 | 137000000.00
+(6 rows)
+
+ health_status | count_val 
+---------------+-----------
+             0 |         5
+             1 |        10
+             2 |         5
+(3 rows)
+
+       Email       | assigned_customer_count 
+-------------------+-------------------------
+ manager@crm.local |                       7
+ sales1@crm.local  |                       7
+ sales2@crm.local  |                       6
+(3 rows)
+
