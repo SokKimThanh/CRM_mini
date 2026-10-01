@@ -484,3 +484,103 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
   1. Tỷ lệ tương phản chữ/nền (Contrast ratio) tối thiểu 4.5:1.
   2. Mọi thẻ hình ảnh (`<img>`) phải có thuộc tính `alt`.
   3. Đảm bảo form có thể navigate bằng bàn phím (Tab).
+
+## BLOCK 15: [TERMINAL_AND_ENVIRONMENT] — Môi trường & Terminal
+
+**[K46] PostgreSQL Client Setup (Thiết lập psql chuẩn)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Mọi lệnh psql phải tắt pager và đảm bảo UTF-8.
+- `TRIGGER`: Bất kỳ lệnh `psql` nào chạy trong PowerShell/CMD.
+- `ACTION`:
+  1. Luôn thêm cờ `-P pager=off` để tránh dừng ở `-- More --`.
+  2. Set biến `PGCLIENTENCODING=UTF8` để tiếng Việt không lỗi.
+  3. Không gõ password nhiều lần — set qua biến môi trường User (1 lần).
+  4. Template chuẩn:
+     ```powershell
+     chcp 65001
+     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+     $env:PGCLIENTENCODING = "UTF8"
+     psql -h localhost -U crm_user -d crm_db -P pager=off -f file.sql
+     ```
+
+**[K47] Environment Persistence (Biến môi trường vĩnh viễn)**
+- `[SEVERITY]`: 🟢 Medium
+- `[SPRINT]`: 1
+- `THUMB_RULE`: Setup môi trường 1 lần, không gõ lại mỗi phiên.
+- `TRIGGER`: Khi bắt đầu dự án trên máy mới hoặc terminal mới.
+- `ACTION`:
+  1. Set biến User-scope (chạy 1 lần duy nhất):
+     ```powershell
+     [System.Environment]::SetEnvironmentVariable('PGCLIENTENCODING', 'UTF8', 'User')
+     [System.Environment]::SetEnvironmentVariable('PGPASSWORD', 'sa', 'User')
+     ```
+  2. Ghi lại vào `docs/setup/environment.md` để biết máy nào đã setup.
+  3. Không commit password vào file — chỉ ghi tên biến.
+
+---
+
+## BLOCK 16: [EF_CORE_MAPPING] — Cấu hình quan hệ EF Core
+
+**[K48] Bidirectional Navigation Mapping**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Khi entity có navigation 2 chiều, PHẢI chỉ định cả 2 đầu.
+- `TRIGGER`: Viết `OnModelCreating`, cấu hình `HasOne` / `WithMany`.
+- `ACTION`:
+  1. Kiểm tra entity con có navigation sang cha không.
+  2. Kiểm tra entity cha có `ICollection<Con>` không.
+  3. Nếu cả 2 có → dùng `.WithMany(parent => parent.Children)`.
+  4. Nếu chỉ 1 chiều → dùng `.WithMany()`.
+  5. Cấm để `.WithMany()` trống khi entity đối diện có collection.
+
+**[K49] Shadow Property Prevention**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: EF Core không được tự sinh cột ảo. Nếu có warning "shadow state" → fix ngay.
+- `TRIGGER`: Khi `dotnet build` hoặc `dotnet run` xuất hiện: `The foreign key property 'X' was created in shadow state`.
+- `ACTION`:
+  1. Đọc tên property bị shadow (ví dụ `TeamId1`).
+  2. Tìm entity chứa property gốc (`TeamId`).
+  3. Kiểm tra relationship cấu hình 2 chiều đã đúng chưa (K48).
+  4. Nếu đúng mà vẫn warning → thêm `.HasForeignKey()` chỉ định rõ.
+  5. Test lại `dotnet run` đến khi warning biến mất hoàn toàn.
+
+---
+
+## BLOCK 17: [RUNBOOK_QUALITY] — Chất lượng Runbook
+
+**[K50] Objectives & Verification Targets**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Mỗi runbook phải có 2 bảng ở đầu: Mục tiêu và Chỉ số đích.
+- `TRIGGER`: Bắt đầu viết runbook mới.
+- `ACTION`:
+  1. **Bảng Objectives**: 3–5 mục tiêu cụ thể của phiên làm việc.
+  2. **Bảng Verification Targets**: các con số cụ thể phải đạt (số bản ghi, số file, số dòng code).
+  3. Cuối runbook phải có bảng **Final Audit Checklist** đối chiếu với Targets ban đầu.
+
+**[K51] RCA for Every Bug (Root Cause Analysis bắt buộc)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Mỗi lỗi gặp trong thực tế phải được ghi lại kèm nguyên nhân gốc.
+- `TRIGGER`: Khi debug xong một lỗi.
+- `ACTION`:
+  1. Ghi lại 4 mục:
+     - **Triệu chứng**: Lỗi xuất hiện thế nào.
+     - **Nguyên nhân gốc**: Tại sao lỗi xảy ra.
+     - **Giải pháp**: Đã sửa bằng cách nào.
+     - **Xác nhận**: Làm sao biết đã sửa thành công.
+  2. Đưa vào runbook tại phase tương ứng (không gộp vào Troubleshooting chung).
+  3. Nếu lỗi nghiêm trọng → thêm vào BLOCK 2 (Tech Debt Report).
+
+**[K52] Real Output Verification**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không ghi "kỳ vọng" — ghi "output thực tế đã nghiệm thu".
+- `TRIGGER`: Khi viết phần Verify / Smoke Test của runbook.
+- `ACTION`:
+  1. Chạy lệnh thật → copy output thật vào runbook.
+  2. Đặt output trong block code `text` để giữ format.
+  3. Nếu output dài → cắt phần không cần thiết, giữ header và dòng cuối.
+  4. Ghi rõ ngày/giờ chạy output lần cuối nếu có thể.
