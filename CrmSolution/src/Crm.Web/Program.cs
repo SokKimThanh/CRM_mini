@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", false);
@@ -31,7 +31,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
 
     options.User.RequireUniqueEmail = true;
 })
-.AddEntityFrameworkStores<AppIdentityDbContext>()
+.AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
