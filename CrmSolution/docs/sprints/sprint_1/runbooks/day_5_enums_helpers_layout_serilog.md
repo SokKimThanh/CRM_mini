@@ -79,6 +79,7 @@ Build succeeded.
 ### PHASE 1 — TẠO 5 ENUMS NGHIỆP VỤ
 > 🕒 **Time Budget:** 12 Phút
 
+### [EXEC] Các bước chạy
 **1. Setup & Execution (Thực thi):**
 Chạy script PowerShell sau từ gốc dự án để tạo thư mục và sinh 5 file Enum. Mọi file được tạo với định dạng UTF-8 (No BOM).
 *(Lưu ý Kiến trúc: Đặt tên `SalesTaskStatus` thay vì `TaskStatus` để tránh lỗi CS0104 với Base Class của .NET).*
@@ -168,6 +169,10 @@ foreach ($fileName in $enumDefinitions.Keys) {
 }
 ```
 
+[DEVIATION] Nếu lỗi `CS0104: 'TaskStatus' is an ambiguous reference` xuất hiện khi build.
+Nguyên nhân: .NET đã có sẵn class `System.Threading.Tasks.TaskStatus`.
+Fix: Đổi tên Enum thành `SalesTaskStatus` như script bên trên.
+
 **2. Verification (Xác thực):**
 ```powershell
 $count = (Get-ChildItem -Path "src/Crm.Domain/Enums/*.cs").Count
@@ -176,9 +181,21 @@ if ($count -eq 5) { Write-Host "[OK] Phase 1 Checkpoint: Đã tạo 5 files." -F
 
 ---
 
+
+
+### [LEARN] Khái niệm (5 phút)
+- **Tại sao phải đổi tên `TaskStatus` thành `SalesTaskStatus`?**
+  Để tránh conflict với core library của .NET, giúp code dễ maintain và không cần alias rườm rà.
+- **Tại sao dùng UTF-8 No BOM?**
+  Để đảm bảo tính tương thích chéo (cross-platform) giữa Windows và Linux/Docker.
+
+### [CONCEPT] Checklist cuối phase
+- [ ] Hiểu lý do đặt tên `SalesTaskStatus` thay vì `TaskStatus`.
+- [ ] Nắm được cách sinh file bằng script PowerShell (Idempotency).
 ### PHASE 2 — TẠO 2 UTILITY HELPERS
 > 🕒 **Time Budget:** 13 Phút
 
+### [EXEC] Các bước chạy
 **1. Setup & Execution (Thực thi):**
 Tạo hàm định dạng tiền tệ VNĐ và xử lý múi giờ UTC <-> GMT+7 (Cross-platform cho cả Windows/Linux).
 
@@ -235,6 +252,10 @@ Write-Host "  [OK] Tạo file: CurrencyHelper.cs" -ForegroundColor Green
 Write-Host "  [OK] Tạo file: DateHelper.cs" -ForegroundColor Green
 ```
 
+[DEVIATION] Nếu lỗi `TimeZoneNotFoundException` trên Linux/Docker.
+Nguyên nhân: Windows dùng ID "SE Asia Standard Time" còn Linux dùng chuẩn IANA "Asia/Ho_Chi_Minh".
+Fix: Code `DateHelper` đã có sẵn khối try-catch để handle 2 chuẩn này.
+
 **2. Verification (Xác thực):**
 ```powershell
 dotnet build src/Crm.Business/Crm.Business.csproj
@@ -243,10 +264,22 @@ dotnet build src/Crm.Business/Crm.Business.csproj
 
 ---
 
+
+
+### [LEARN] Khái niệm (5 phút)
+- **Tại sao phải có `DateHelper` riêng?**
+  Vì server trả về UTC (theo chuẩn DB), nhưng UI cần hiển thị theo giờ Việt Nam. Do sự khác biệt múi giờ giữa Windows/Linux, ta cần xử lý mềm (try-catch) cả 2 chuỗi timezone.
+- **`CultureInfo("vi-VN")` có ý nghĩa gì?**
+  Giúp format số tiền tự động có dấu phân cách hàng nghìn và ký hiệu "đ" phía sau (ví dụ: 100.000 đ).
+
+### [CONCEPT] Checklist cuối phase
+- [ ] Hiểu cách xử lý khác biệt Timezone giữa Windows và Linux.
+- [ ] Nắm được ý nghĩa của `CultureInfo` trong format tiền tệ.
 ### PHASE 3 — HOÀN THIỆN MUDLAZOR MASTER LAYOUT
 > 🕒 **Time Budget:** 25 Phút
 
-**1. Setup & Execution (Thực thi):**
+### [EXEC] Các bước chạy
+**1. Setup & Execution (Khởi tạo Layout):**
 Tạo cấu trúc UI Components.
 
 ```powershell
@@ -397,6 +430,14 @@ Mở `src/Crm.Web/Components/Routes.razor` và kiểm tra `DefaultLayout`:
 </Router>
 ```
 
+[DEVIATION] Nếu màn hình báo lỗi `CS0246: The type NavLinkMatch could not be found`.
+Nguyên nhân: File `NavMenu.razor` chưa nhận biết được namespace Routing.
+Fix: Đảm bảo đã thêm `@using Microsoft.AspNetCore.Components.Routing` vào `_Imports.razor`.
+
+[DEVIATION] Nếu màn hình trắng bóc hoặc không có sidebar sau khi login.
+Nguyên nhân: `Routes.razor` chưa chỉnh `DefaultLayout` trỏ vào Component mới.
+Fix: Trỏ lại thuộc tính `DefaultLayout="@typeof(Layout.MainLayout)"` trong `<AuthorizeRouteView>`.
+
 **3. Verification (Xác thực):**
 ```powershell
 dotnet build
@@ -405,9 +446,21 @@ dotnet build
 
 ---
 
+
+
+### [LEARN] Khái niệm (10 phút)
+- **Tại sao tách `EmptyLayout` và `MainLayout`?**
+  Trang đăng nhập cần giao diện toàn màn hình, không sidebar/header (`EmptyLayout`). Các trang trong CRM cần đầy đủ điều hướng (`MainLayout`).
+- **Component `<MudMainContent>` làm nhiệm vụ gì?**
+  Nó là container chính chứa nội dung (`@Body`), tự động tính toán margin/padding để không bị che khuất bởi AppBar và Drawer.
+
+### [CONCEPT] Checklist cuối phase
+- [ ] Biết cách thiết lập nhiều Layout khác nhau trong Blazor.
+- [ ] Hiểu luồng kết nối giữa `App.razor` -> `Routes.razor` -> `MainLayout.razor`.
 ### PHASE 4 — TÍCH HỢP SERILOG STRUCTURED LOGGING
 > 🕒 **Time Budget:** 25 Phút
 
+### [EXEC] Các bước chạy
 **1. Setup & Execution (Cài Package & Ghi cấu hình):**
 
 ```powershell
@@ -516,11 +569,26 @@ if (-not (Select-String -Path $gitignorePath -Pattern "^logs/" -Quiet)) {
 }
 ```
 
+[DEVIATION] Nếu app chạy bình thường nhưng không thấy file log.
+Nguyên nhân: Đường dẫn `logs/` trong config sai, hoặc ứng dụng không có quyền ghi.
+Fix: Kiểm tra lại `appsettings.json` đoạn `path: "logs/crm-.log"` và đảm bảo thư mục `src/Crm.Web/logs/` tồn tại.
+
 **5. Verification (Xác thực):**
 ```powershell
 dotnet build
 ```
 *Output kỳ vọng:* `Build succeeded. 0 Warning(s) 0 Error(s)`
+
+
+### [LEARN] Khái niệm (10 phút)
+- **Cấu trúc "Rolling File" là gì?**
+  Là cơ chế tự động tạo file log mới theo chu kỳ (ví dụ: mỗi ngày 1 file `crm-YYYYMMDD.log`). Nó giúp file log không bị quá to, dễ tìm kiếm lỗi.
+- **Tại sao dùng Serilog thay cho Logger mặc định?**
+  Serilog hỗ trợ "Structured Logging" (log có cấu trúc JSON), dễ dàng đưa vào các hệ thống phân tích log tập trung (như ELK, SEQ) sau này.
+
+### [CONCEPT] Checklist cuối phase
+- [ ] Hiểu nguyên lý Rolling File trong ghi log.
+- [ ] Biết cách cấu hình Serilog đọc cấu hình từ `appsettings.json`.
 
 ---
 
