@@ -59,6 +59,16 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
   2. Không báo cáo dài dòng về quá trình tra cứu.
   3. Dùng ngôn ngữ đơn giản chốt lại 1-2 tùy chọn thực thi thực tế nhất với người dùng (vd: "Em thấy dự án có 7 Sprints, anh muốn làm Sprint 1 hay 2?").
 
+**[K53] Technical Candor (Văn phong Súc tích & Định lượng)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Chỉ dùng con số và vị trí chính xác, tuyệt đối không dùng từ ngữ ước lệ, mơ hồ.
+- `TRIGGER`: Giao tiếp với User, viết Comment, viết Docs, hướng dẫn.
+- `ACTION`:
+  1. KHÔNG dùng các từ cảm tính như "chờ một lúc", "cấu hình tương ứng", "chọn cài đặt hợp lý".
+  2. THAY BẰNG từ ngữ định lượng: "đợi 10 giây", "chèn vào dòng 45 sau thẻ X", "thư mục src".
+  3. BẮT BUỘC dùng định dạng trực quan: Bảng (Table) cho ma trận kiểm thử/biến môi trường, Markdown Code block có định danh ngôn ngữ, và Checklist `[ ]` cho các cổng nghiệm thu (Final Audit).
+
 ---
 
 ## BLOCK 3: [GIT_AND_FILESYSTEM] - QUẢN LÝ NHÁNH VÀ FOLDER
@@ -518,6 +528,17 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
   2. Ghi lại vào `docs/setup/environment.md` để biết máy nào đã setup.
   3. Không commit password vào file — chỉ ghi tên biến.
 
+**[K54] Automation First & Idempotency (Script Tự động & Khả lặp)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Lệnh chạy nhiều lần không gây lỗi hoặc đè hỏng dữ liệu. An toàn là số 1.
+- `TRIGGER`: Khi sinh Script hoặc Command (PowerShell, Bash, SQL, EF Core, CLI).
+- `ACTION`:
+  1. Idempotency (Khả lặp): Luôn dùng `-Force`, `IF NOT EXISTS`, hoặc kiểm tra file/thư mục tồn tại trước khi thao tác.
+  2. Path Explicit (Đường dẫn rõ ràng): Tuyệt đối tránh path tương đối mơ hồ. Dùng đường dẫn tuyệt đối hoặc neo cố định thư mục gốc (`cd <root>` ngay đầu block).
+  3. Pin Dependencies (Khóa cứng phiên bản): Nêu rõ version của thư viện/package (ví dụ: `--version 8.0.3`) để tránh cài nhầm bản mới gây breaking changes.
+  4. Xử lý Encoding: Luôn khai báo rõ chuẩn mã hóa (UTF-8 no BOM) để tránh lỗi ký tự trên các OS khác nhau.
+
 ---
 
 ## BLOCK 16: [EF_CORE_MAPPING] — Cấu hình quan hệ EF Core
@@ -584,3 +605,31 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
   2. Đặt output trong block code `text` để giữ format.
   3. Nếu output dài → cắt phần không cần thiết, giữ header và dòng cuối.
   4. Ghi rõ ngày/giờ chạy output lần cuối nếu có thể.
+
+**[K55] Step-by-Step Flow & Time Budget (Tư duy Modular & Phân đoạn)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Làm việc theo dây chuyền một chiều, không bắt user nhảy qua nhảy lại.
+- `TRIGGER`: Khi viết Runbook, hướng dẫn cài đặt, hoặc kế hoạch thực thi.
+- `ACTION`:
+  1. Tách quy trình thành từng Phase khép kín: Setup $\rightarrow$ Execution $\rightarrow$ Verification $\rightarrow$ Rollback.
+  2. Tuân thủ Line-by-Line Execution: Người thực thi chỉ cần copy/paste hoặc chạy lệnh từ trên xuống dưới.
+  3. Gán thời gian dự kiến (Time Budget) cho từng bước để người thực hiện biết tiến độ đang chậm hay đúng hạn.
+
+**[K56] Verification & Assertions (Thiết kế Checkpoints & Output kỳ vọng)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Mọi hành động làm thay đổi hệ thống đều phải có chốt chặn kiểm thử đi kèm.
+- `TRIGGER`: Cung cấp bất kỳ câu lệnh hoặc chỉ dẫn thay đổi hệ thống/code nào.
+- `ACTION`:
+  1. Cung cấp lệnh Verify tiếp theo NGAY SAU lệnh thực thi (ví dụ: `Test-Path`, `Get-ChildItem`, `dotnet build`). Không bao giờ dừng lại ở câu "Chạy lệnh X".
+  2. Cung cấp Output kỳ vọng cụ thể: Nêu chính xác màn hình phải in ra dòng gì (mã 200, `Build succeeded, 0 Warning 0 Error`). Kết hợp với nguyên tắc Real Output Verification [K52].
+
+**[K57] Troubleshooting Matrix & Rollback (Quản trị rủi ro)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Luôn chuẩn bị sẵn phao cứu sinh và đường lùi trước khi hành động.
+- `TRIGGER`: Cung cấp quy trình deploy, migrate, cài đặt hoặc thay đổi cấu trúc lớn.
+- `ACTION`:
+  1. Bảng tra cứu lỗi (Troubleshooting Matrix): Liệt kê sẵn ít nhất 5-10 lỗi phổ biến nhất. Format: Mã/Tên lỗi $\rightarrow$ Nguyên nhân gốc (Root cause) $\rightarrow$ Lệnh khắc phục (Fix action).
+  2. Kế hoạch lùi (Rollback plan): Luôn có phương án hoàn tác rõ ràng (Git reset, backup DB, xóa file rác) để user xử lý khi gặp sự cố vượt quá thời gian buffer.
