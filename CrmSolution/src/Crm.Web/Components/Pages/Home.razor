@@ -1,13 +1,66 @@
 @page "/"
-@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
-<PageTitle>Trang chủ — CRM</PageTitle>
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h5" Color="MudBlazor.Color.Primary" Class="mb-4 font-weight-bold">
+        Sprint 1 — Ngày 5: Hoàn tất Foundation
+    </MudText>
 
-<MudText Typo="Typo.h4">Chào mừng đến CRM System</MudText>
-<MudText Typo="Typo.body1" Class="mt-2">
-    Bạn đã đăng nhập thành công. Day 3 hoàn thành!
-</MudText>
+    <MudGrid>
+        <MudItem xs="12" md="6">
+            <MudCard Elevation="2">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="MudBlazor.Color.Primary">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Danh mục & Xử lý lõi</MudText>
+                        <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">Domain & Business</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudList T="string" Dense="true">
+                        <MudListItem Icon="@Icons.Material.Filled.Label">
+                            <MudText><b>5 Enums:</b> CustomerHealth, SalesTaskStatus, TaskOutcome, QuoteStatus, InteractionType</MudText>
+                        </MudListItem>
+                        <MudListItem Icon="@Icons.Material.Filled.Calculate">
+                            <MudText><b>2 Helpers:</b> CurrencyHelper (VND / Mobile rút gọn), DateHelper (Chuyển đổi UTC - GMT+7)</MudText>
+                        </MudListItem>
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
 
-<MudAlert Severity="Severity.Success" Class="mt-4">
-    Seed database OK: 4 roles, 5 users, 5 profiles.
-</MudAlert>
+        <MudItem xs="12" md="6">
+            <MudCard Elevation="2">
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="MudBlazor.Color.Secondary">
+                            <MudIcon Icon="@Icons.Material.Filled.Web" />
+                        </MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Giao diện & Giám sát</MudText>
+                        <MudText Typo="Typo.body2" Color="MudBlazor.Color.Secondary">Web & Logging</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudList T="string" Dense="true">
+                        <MudListItem Icon="@Icons.Material.Filled.Palette">
+                            <MudText><b>Theme & Layout:</b> CrmTheme (Light/Dark Palette), Scoped CSS ::deep, NavMenu</MudText>
+                        </MudListItem>
+                        <MudListItem Icon="@Icons.Material.Filled.Article">
+                            <MudText><b>Serilog:</b> Bootstrap Logger, ghi Console và file log hàng ngày</MudText>
+                        </MudListItem>
+                        <MudListItem Icon="@Icons.Material.Filled.Verified">
+                            <MudText><b>Audit:</b> Đạt chuẩn 100% Zero-Inline CSS</MudText>
+                        </MudListItem>
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

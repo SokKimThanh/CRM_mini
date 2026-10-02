@@ -1,10 +1,22 @@
+using System;
+using System.IO;
+using Serilog;
 using Crm.Data;
 using Crm.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+        .Build())
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // 1. DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -91,5 +103,16 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Database seeding failed");
     }
 }
-
-app.Run();
+try
+{
+    Log.Information("Starting CRM System");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

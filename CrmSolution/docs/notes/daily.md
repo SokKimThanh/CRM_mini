@@ -91,3 +91,125 @@
 - Scaffold 16 entities từ database bằng dotnet-ef
 - Thêm DbSet vào AppDbContext
 - Seed data demo (customers, opportunities, ...)
+
+# Daily Log — Day 5 / Sprint 1: Foundation (Enums, Helpers, Layout, Theme & Serilog)
+
+* **Ngày thực hiện:** Sprint 1 — Day 5
+
+* **Target Framework:** .NET 10 | MudBlazor | Serilog
+
+* **Trạng thái:** Hoàn thành 100% mục tiêu (Build succeeded, 0 Warning, 0 Error, Zero-Inline Audit PASS)
+
+## 1. Hạng mục đã hoàn tất (Done)
+
+* \[x\] **Pre-flight & Cleanup:**
+
+  * Git checkpoint an toàn trước khi vào phiên làm việc.
+
+  * Quét và chuyển đổi toàn bộ inline style tĩnh sang class CSS tương ứng tại `Login.razor` và `AccessDenied.razor`.
+
+* \[x\] **5 Domain Enums (`src/Crm.Domain/Enums`):**
+
+  * `CustomerHealth.cs`: New, Healthy, NeedAttention, AtRisk, Dormant, Churned.
+
+  * `SalesTaskStatus.cs`: Pending, InProgress, Completed, Skipped, Cancelled (tránh trùng tên BCL).
+
+  * `TaskOutcome.cs`: 8 trạng thái kết quả tương tác khách hàng.
+
+  * `QuoteStatus.cs`: Draft, PendingApproval, Sent, Accepted, Rejected, Expired.
+
+  * `InteractionType.cs`: Call, Meeting, Email, Zalo, Visit.
+
+* \[x\] **2 Business Helpers (`src/Crm.Business/Helpers`):**
+
+  * `CurrencyHelper.cs`: Định dạng số tiền chuẩn văn hóa Việt Nam (`vi-VN`), hỗ trợ `FormatShort` rút gọn (K, tr, tỷ) tối ưu cho Mobile.
+
+  * `DateHelper.cs`: Chuyển đổi hai chiều UTC $\leftrightarrow$ GMT+7 với cơ chế fallback 3 tầng chống crash trên môi trường Linux/Docker.
+
+* \[x\] **Theme tập trung (`src/Crm.Web/Theme`):**
+
+  * `CrmTheme.cs`: Khai báo bảng màu `PaletteLight` và `PaletteDark`, cấu hình bán kính viền mặc định.
+
+* \[x\] **Master Layout & Điều hướng (`src/Crm.Web/Components/Layout`):**
+
+  * `EmptyLayout.razor`: Dành cho trang độc lập (Login, AccessDenied) với các Provider cốt lõi.
+
+  * `MainLayout.razor` & `MainLayout.razor.css`: Điều hướng Responsive với Scoped CSS (`::deep`), chuyển đổi Dark/Light mode tức thì, đóng mở Drawer và nút Đăng xuất qua JS Interop.
+
+  * `NavMenu.razor`: Cấu hình 6 menu chức năng (Dashboard kích hoạt, 5 module nghiệp vụ đặt trạng thái disabled chờ Sprint tiếp theo).
+
+* \[x\] **Hạ tầng Logging (Serilog):**
+
+  * Cài đặt `Serilog.AspNetCore (8.0.3)` và `Serilog.Sinks.File (5.0.0)`.
+
+  * Cấu hình file `appsettings.json` ghi song song ra Console và file xoay vòng hàng ngày: `logs/crm-.log`.
+
+  * Cấu hình Bootstrap Logger trong `Program.cs` bắt lỗi crash ngay từ pha khởi tạo host.
+
+* \[x\] **Bảng điều khiển trang chủ (`Home.razor`):**
+
+  * Thiết kế Dashboard tóm tắt tiến độ Day 5 sử dụng các thẻ MudBlazor (`MudCard`, `MudAvatar`, `MudList`, `MudIcon`).
+
+  * Bảo vệ trang bằng directive `@attribute [Authorize]`.
+
+* \[x\] **Kiểm tra chất lượng mã nguồn (Quality Gate):**
+
+  * Zero-Inline CSS Audit đạt chuẩn 100% không chứa inline style tĩnh.
+
+  * Kiểm tra E2E thủ công qua `dotnet run`: Đăng nhập, đổi theme, mở drawer và kiểm tra file log sinh thực tế.
+
+## 2. Số liệu kỹ thuật (Metrics & Deliverables)
+
+| 
+
+| **Hạng mục** | **Số lượng / Kết quả** | **Chi tiết** | 
+| **Domain Enums** | 5 files | `Crm.Domain/Enums/*.cs` | 
+| **Business Helpers** | 2 files | `CurrencyHelper.cs`, `DateHelper.cs` | 
+| **Web Layout & Theme** | 5 files | `CrmTheme.cs`, `EmptyLayout.razor`, `MainLayout.razor`, `MainLayout.razor.css`, `NavMenu.razor` | 
+| **Web Dashboard** | 1 file | `Home.razor` | 
+| **Trạng thái Build** | PASS | 0 Error, 0 Warning (`dotnet build`) | 
+| **CSS Audit** | PASS | 0 vi phạm inline style tĩnh trên toàn bộ cây thư mục `.razor` | 
+| **Vị trí Log File** | Active | `src/Crm.Web/logs/crm-YYYYMMDD.log` | 
+
+## 3. Nhật ký sự cố & Cách khắc phục (Troubleshooting Matrix)
+
+| **Mã lỗi / Hiện tượng** | **Vị trí phát sinh** | **Nguyên nhân gốc** | **Biện pháp xử lý dứt điểm** | 
+| **CS0103: The name 'CrmTheme' does not exist** | `EmptyLayout.razor`  `MainLayout.razor` | Layout chưa nhận diện namespace do file `_Imports.razor` chưa nạp hoặc cache biên dịch chưa nhận. | Thêm trực tiếp `@using Crm.Web.Theme` vào đầu file layout hoặc chuẩn hóa trong `_Imports.razor`. | 
+| **Warning MUD0002: Illegal Attribute 'Title'** | `MainLayout.razor` | `MudIconButton` không hỗ trợ thuộc tính viết hoa `Title` theo quy chuẩn MudBlazor analyzer. | Đổi thành chữ thường `title="..."` hoặc thuộc tính trợ năng `aria-label="..."`. | 
+| **CS0128: A local variable named 'builder' is already defined** | `Program.cs` | Khai báo trùng lặp `var builder = WebApplication.CreateBuilder(args);` khi chèn cấu hình Bootstrap Logger. | Giữ duy nhất 1 lần khai báo `var builder` sau khối cấu hình `Log.Logger`. | 
+| **CS0246: The type or namespace name 'Authorize' could not be found** | `Home.razor` | Dùng `@attribute [Authorize]` nhưng thiếu namespace `Microsoft.AspNetCore.Authorization`. | Bổ sung `@using Microsoft.AspNetCore.Authorization` vào đầu file hoặc `_Imports.razor`. | 
+| **CS0104: Xung đột namespace `Color`** | Các file Razor có dùng Chart | Xung đột định danh enum `Color` giữa `ApexCharts.Color` và `MudBlazor.Color`. | Chỉ định tường minh `MudBlazor.Color.Primary` thay vì gọi tắt `Color.Primary`. | 
+| **Sai vị trí cấu hình `.gitignore`** | Thư mục giải pháp | File `.gitignore` bị tạo nhầm trong `CrmSolution` thay vì thư mục gốc của repository. | Xóa file thừa và thêm quy tắc bỏ qua `**/logs/` vào file `.gitignore` ở gốc dự án. | 
+| **Vi phạm Zero-Inline CSS Audit** | `Login.razor`  `AccessDenied.razor` | Tồn tại các thẻ có `Style="..."` tĩnh trên `MudPaper` và `MudIcon`. | Di chuyển toàn bộ định dạng tĩnh vào các class tương ứng trong file `.razor.css`. | 
+
+## 4. Kiến thức & Bài học cốt lõi (Key Learnings)
+
+1. **Quy chuẩn Zero-Inline Styling:**
+
+   * Việc tách rời hoàn toàn CSS tĩnh vào file scoped `.razor.css` giúp giao diện độc lập với logic C#, không bị đè style ngoài ý muốn và đáp ứng chuẩn thiết kế enterprise.
+
+2. **Cơ chế Scoped CSS với thư viện bên thứ ba (`::deep`):**
+
+   * Blazor Scoped CSS gắn mã hash định danh (`b-xxxxxx`) vào phần tử HTML thuần. Do các component của MudBlazor (`<MudLayout>`, `<MudAppBar>`) là C# Razor Components nên không nhận trực tiếp hash này. Bắt buộc cần thẻ HTML bao ngoài (ví dụ `<div class="crm-layout-wrapper">`) làm điểm neo cho selector `.crm-layout-wrapper ::deep .mud-...`.
+
+3. **Cơ chế Fallback múi giờ 3 tầng (`DateHelper`):**
+
+   * Windows Host sử dụng Registry ID (`SE Asia Standard Time`).
+
+   * Linux/Docker sử dụng IANA ID (`Asia/Ho_Chi_Minh`).
+
+   * Alpine Container tối giản: Tự động fallback sang `CustomTimeZone` mang nhãn `ICT` với độ lệch cố định $+07:00$. Thiết kế này đảm bảo an toàn tuyệt đối khi đóng gói container.
+
+4. **Bootstrap Logging với Serilog:**
+
+   * Khởi tạo `Log.Logger` và nạp cấu hình `appsettings.json` trước lệnh `WebApplication.CreateBuilder` đảm bảo mọi lỗi nghiêm trọng trong quá trình Dependency Injection hoặc khởi tạo service (Startup Crash) đều được ghi nhận đầy đủ vào file log.
+
+## 5. Kế hoạch tiếp theo (Next Steps — Day 6)
+
+* Xây dựng tầng truy cập dữ liệu: `CustomerRepository` và giao diện `ICustomerRepository`.
+
+* Phát triển tầng nghiệp vụ: `CustomerService` và DTOs tương ứng.
+
+* Thiết lập bộ Unit Tests kiểm thử toàn bộ luồng nghiệp vụ của `CustomerService`.
+
+* Xây dựng màn hình danh sách khách hàng (`/customers`) sử dụng `MudTable` hỗ trợ phân trang, tìm kiếm thời gian thực và lọc trạng thái sức khỏe (`CustomerHealth`).
