@@ -702,3 +702,67 @@ Cần định dạng một thành phần giao diện?
   └─► 4. Là style đặc thù không hỗ trợ (Scrollbar, Keyframe, Animation)?
          └─► CÓ ──► Dùng Root Wrapper + Scoped CSS [TênComponent].razor.css với ::deep
 ```
+
+---
+
+## BLOCK 19: [LEARNING_MODE] — Chế độ học tập
+
+**[K63] Two-Pass Execution (Chạy 2 lượt)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không vừa chạy vừa học trong cùng 1 lượt.
+- `TRIGGER`: Khi thực thi runbook có yếu tố kỹ thuật mới.
+- `ACTION`:
+  1. **Lượt 1 — Execution Run (30–45 phút):** Copy-paste toàn bộ, chỉ quan tâm build xanh. Mục tiêu: có Working Prototype.
+  2. **Lượt 2 — Reverse-Engineering (không giới hạn):** Mở từng file, đọc từng dòng, đặt câu hỏi "tại sao".
+  3. Không trộn 2 lượt. Lượt 1 xong mới sang lượt 2.
+
+**[K64] Controlled Sabotage (Cố tình làm hỏng)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Muốn hiểu thì phải tự tay phá code.
+- `TRIGGER`: Khi đã có Working Prototype từ K63.
+- `ACTION`:
+  1. Tạo nhánh Git riêng hoặc chắc chắn đã commit.
+  2. Thử nghiệm 1: Đổi tên class/enum trùng với .NET → build xem lỗi `CS0104`.
+  3. Thử nghiệm 2: Xóa attribute/wrapper → xem hành vi thay đổi thế nào.
+  4. Thử nghiệm 3: Đổi connection string sai → xem exception.
+  5. Sau mỗi thử nghiệm: `git restore .` để hoàn tác.
+  6. Ghi lại lỗi vào file `docs/notes/sabotage-log.md`.
+
+**[K65] Concept Mastery Metric (Đo bằng khái niệm)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không đo tiến độ bằng "xong đúng giờ chưa". Đo bằng "nắm được khái niệm gì".
+- `TRIGGER`: Cuối mỗi phiên làm việc.
+- `ACTION`:
+  1. Liệt kê 3–5 khái niệm quan trọng của phiên.
+  2. Tự hỏi: "Nếu không nhìn runbook, mình có giải thích lại được không?"
+  3. Nếu không → đánh dấu ôn lại.
+  4. Ghi vào `docs/notes/concepts-mastered.md`.
+
+**[K66] Deviation Warning (Cảnh báo lệch đường)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Mỗi bước quan trọng phải có "nếu làm sai thì lỗi gì".
+- `TRIGGER`: Khi soạn bất kỳ runbook nào.
+- `ACTION`:
+  1. Mỗi bước có khả năng fail → thêm block:
+     ```
+     [DEVIATION] Nếu <làm X sai> → lỗi `<error code>`.
+     Nguyên nhân: <...>
+     Fix: <...>
+     ```
+  2. Không để user tự mò mẫm khi fail.
+
+**[K67] Dual-Layer Runbook (Runbook 2 lớp)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Tách thời gian EXEC và LEARN trong runbook.
+- `TRIGGER`: Khi soạn runbook có yếu tố kỹ thuật mới.
+- `ACTION`:
+  1. Mỗi phase chia 2 phần:
+     - **[EXEC]**: các bước chạy lệnh — không lan man.
+     - **[LEARN]**: khái niệm, lý do, cách debug.
+  2. Phân bổ thời gian: 70–75% EXEC, 25–30% LEARN.
+  3. Cuối mỗi phase có **[CONCEPT]**: gạch đầu dòng khái niệm cần nắm.
