@@ -161,3 +161,8 @@ Generated/
 
 project.lock.json
 project.fragment.lock.json
+
+
+src/Crm.Data/ScaffoldTemp/
+
+**/logs/
