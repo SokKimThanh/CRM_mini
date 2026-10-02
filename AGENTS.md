@@ -633,3 +633,72 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 - `ACTION`:
   1. Bảng tra cứu lỗi (Troubleshooting Matrix): Liệt kê sẵn ít nhất 5-10 lỗi phổ biến nhất. Format: Mã/Tên lỗi $\rightarrow$ Nguyên nhân gốc (Root cause) $\rightarrow$ Lệnh khắc phục (Fix action).
   2. Kế hoạch lùi (Rollback plan): Luôn có phương án hoàn tác rõ ràng (Git reset, backup DB, xóa file rác) để user xử lý khi gặp sự cố vượt quá thời gian buffer.
+
+---
+
+## BLOCK 18: [UI_STYLING_AND_MUDBLAZOR] — Quản trị Styling & MudBlazor
+
+**[K58] Centralized Theming (Kiến trúc Theme tập trung)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không khai báo màu cứng (hardcode). Mọi màu sắc phải dùng Design Tokens của hệ thống.
+- `TRIGGER`: Khi cần đổi màu, font, hoặc thiết lập giao diện gốc.
+- `ACTION`:
+  1. Tuyệt đối không khai báo `new MudTheme()` trong file `.razor`. Khai báo tập trung ở `Theme/CrmTheme.cs`.
+  2. Định nghĩa đủ 2 bảng màu `PaletteLight` và `PaletteDark`.
+  3. Chỉ dùng biến CSS nội sinh của MudBlazor (vd: `var(--mud-palette-primary)`). Không ghi đè màu nếu framework đã tự binding.
+
+**[K59] Theme State Management (Quản lý trạng thái giao diện)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Tôn trọng cài đặt hệ điều hành và ghi nhớ lựa chọn của user.
+- `TRIGGER`: Khởi tạo `MudThemeProvider` hoặc xử lý nút bấm chuyển đổi Dark/Light mode.
+- `ACTION`:
+  1. Dùng `GetSystemPreference()` và `WatchSystemPreference()` trong `OnAfterRenderAsync` để bắt theme máy tính.
+  2. Lưu cấu hình Theme thủ công của user vào `localStorage` bằng JS Interop để F5 không bị mất.
+
+**[K60] Dynamic Style Boundary (Ranh giới Inline Style & Utility)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Tuyệt đối CẤM dùng `style="..."` tĩnh. Phải dùng Utility Class.
+- `TRIGGER`: Khi căn chỉnh thẻ HTML (margin, padding, flex, color...).
+- `ACTION`:
+  1. Chuyển đổi toàn bộ sang class MudBlazor có sẵn (vd: `style="padding: 16px"` -> `Class="pa-4"`).
+  2. Không tự chỉnh chiều cao Viewport thủ công, để `<MudMainContent>` lo.
+  3. Chỉ cho phép dùng thuộc tính `style="..."` khi biến đó là động ở runtime (vd: `style="width: @(progress)%"`).
+
+**[K61] Safe Scoped CSS (Cô lập CSS)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: CSS ghi đè (override) phải có thẻ Wrapper (thẻ bọc ngoài) và dùng `::deep`.
+- `TRIGGER`: Khi tạo file `[TênComponent].razor.css` để tinh chỉnh UI của MudBlazor.
+- `ACTION`:
+  1. Bắt buộc tạo một thẻ `<div>` gốc (Root HTML Wrapper) bọc ngoài cùng component.
+  2. Dùng toán tử `::deep` trong file `.css` thì CSS mới tác động được vào lớp con của MudBlazor.
+
+**[K62] Pre-Commit UI Audit (Kiểm toán tự động CI)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Code có dính inline style tĩnh thì không được Commit.
+- `TRIGGER`: Trước khi chạy lệnh `git commit`.
+- `ACTION`:
+  1. Chạy đoạn script PowerShell quét thư mục `src\Crm.Web` kiểm tra đuôi `.razor`.
+  2. Nếu phát hiện chuỗi `style="[^"]*"` mà không có `@(` (dấu hiệu của biến động), sẽ báo lỗi đỏ (Write-Error) chặn lưu.
+
+### SƠ ĐỒ DÒNG CHẢY QUYẾT ĐỊNH (STYLING DECISION FLOW)
+
+```text
+Cần định dạng một thành phần giao diện?
+  │
+  ├─► 1. Giá trị có thay đổi liên tục theo biến C# runtime không?
+  │      └─► CÓ ──► Dùng Inline Style động: style="width: @(x)%"
+  │
+  ├─► 2. Framework có hỗ trợ sẵn không? (Color, Elevation, pa-*, ma-*, d-flex)
+  │      └─► CÓ ──► Dùng thuộc tính Props và MudBlazor Utility Class
+  │
+  ├─► 3. Là màu thương hiệu, font, bán kính góc dùng chung hệ thống?
+  │      └─► CÓ ──► Khai báo trong Theme/CrmTheme.cs
+  │
+  └─► 4. Là style đặc thù không hỗ trợ (Scrollbar, Keyframe, Animation)?
+         └─► CÓ ──► Dùng Root Wrapper + Scoped CSS [TênComponent].razor.css với ::deep
+```
