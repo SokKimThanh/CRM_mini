@@ -69,6 +69,17 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
   2. THAY BẰNG từ ngữ định lượng: "đợi 10 giây", "chèn vào dòng 45 sau thẻ X", "thư mục src".
   3. BẮT BUỘC dùng định dạng trực quan: Bảng (Table) cho ma trận kiểm thử/biến môi trường, Markdown Code block có định danh ngôn ngữ, và Checklist `[ ]` cho các cổng nghiệm thu (Final Audit).
 
+**[K68] Daily Log & Context Synchronization (Đồng bộ nhật ký làm việc)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: LUÔN LUÔN đọc nhật ký làm việc hàng ngày (daily log) để biết ngữ cảnh hiện tại trước khi bắt đầu công việc. CẤM bắt đầu code khi chưa biết hôm trước mình đang làm dở cái gì.
+- `TRIGGER`: Khi bắt đầu một phiên làm việc mới hoặc nhận task mới từ User.
+- `ACTION`:
+  1. Tự động tìm và đọc file nhật ký làm việc (ví dụ: `CrmSolution/docs/notes/daily.md` hoặc các file log tương ứng).
+  2. Nắm bắt tiến độ công việc gần nhất, các task đang dang dở, lỗi chưa fix (nếu có).
+  3. Báo cáo ngắn gọn (theo nguyên tắc "Nói ít làm nhiều") để xác nhận với User (Ví dụ: "Em thấy hôm qua mình đang làm dở chức năng X, có phải hôm nay mình đi tiếp phần này không anh?").
+  4. Sau khi xong việc, tự động cập nhật lại những gì đã làm vào file daily log.
+
 ---
 
 ## BLOCK 3: [GIT_AND_FILESYSTEM] - QUẢN LÝ NHÁNH VÀ FOLDER
