@@ -213,3 +213,28 @@
 * Thiết lập bộ Unit Tests kiểm thử toàn bộ luồng nghiệp vụ của `CustomerService`.
 
 * Xây dựng màn hình danh sách khách hàng (`/customers`) sử dụng `MudTable` hỗ trợ phân trang, tìm kiếm thời gian thực và lọc trạng thái sức khỏe (`CustomerHealth`).
+# Daily Log — Day 6 / Sprint 1: Kế hoạch Customer Repository & Service Unit Tests
+
+* **Ngày thực hiện:** Sprint 1 — Day 6 (Plan/Runbook Generation)
+* **Target Framework:** .NET 10 | xUnit | Moq
+
+## 1. Hạng mục đã hoàn tất (Done)
+- [x] Tạo file Actionable Prompts cho Day 6 tại `docs/sprints/sprint_1/prompts/day6_prompts.md`.
+- [x] Tiến hành Sandbox Experimentation (Dry-run mã C#): Xây dựng giả lập `CustomerRepository` và `CustomerService`.
+- [x] Áp dụng thư viện `MockQueryable.Moq` và `.BuildMock()` để bypass lỗi `ExecuteAsync` của EF Core trong Unit Tests.
+- [x] Đạt Passed! 100% (3/3 Tests Passed) trong môi trường thử nghiệm.
+- [x] Thu thập Real Output và biên soạn thành Runbook Markdown chuẩn Dual-Layer tại `docs/sprints/sprint_1/runbooks/Day_6_Sprint_1_Customer_Repository_Service.md`.
+- [x] Khôi phục toàn bộ mã nguồn về sạch (chỉ giữ lại file Runbook và Prompts).
+
+## 2. Số liệu kỹ thuật
+- **Tests Passed (Sandbox):** 3
+- **Runbook:** 1 file Markdown hoàn thiện.
+- **Prompts:** 3 phiên làm việc băm nhỏ.
+
+## 3. Bài học cốt lõi (Meta-Skills)
+- Củng cố kỹ năng `[K69] Self-Correction & Context Assimilation`: Tự lùng sục codebase thay vì đặt câu hỏi ngớ ngẩn với user.
+- Thấy được lỗi thực tế `IQueryable không hỗ trợ Async` khi Unit Test Service, nhờ có thói quen Sandbox Experimentation (`K70`), đã fix bằng `MockQueryable.Moq` trước khi ghi vào Runbook.
+
+## Next Steps (Phiên sau)
+- User hoặc AI sẽ sử dụng prompt đã tạo để thực sự sinh mã nguồn vào dự án cho Day 6.
+- Tiến tới Day 7: Xây dựng màn hình hiển thị danh sách Khách hàng trên MudBlazor (`Customers/Index.razor`).
