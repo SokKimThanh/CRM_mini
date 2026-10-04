@@ -33,7 +33,7 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   3. Lập trình tuân thủ tuyệt đối quy chuẩn backend/frontend ([K12], [K14], [K18], [K26], [K33]).
   4. Nếu thao tác thực thể CRM, đối chiếu với mô hình phễu và vòng đời đối tượng ([K74] – [K77]).
   5. Viết và thực thi test xác thực ([K45], [K46], [K63]).
-  6. Cập nhật tài liệu kỹ thuật liên quan theo cơ chế append-only ([K09], [K15]).
+  6. Cập nhật tài liệu kỹ thuật liên quan theo cơ chế append-only và đồng bộ hợp đồng kép ([K09], [K15]).
   7. Ghi nhận nợ kỹ thuật nếu có mã tạm hoặc TODO phát sinh ([K07]).
   8. Thực hiện kiểm tra an toàn trước commit và commit chuẩn ([K08], [K49], [K35]).
 
@@ -107,14 +107,15 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   2. Chuyển sang nhánh tính năng theo định dạng: `feature/<tên-tính-năng>` hoặc `fix/<tên-lỗi>`.
   3. Đặt thông điệp commit theo chuẩn: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`.
 
-**[K09] Append-Only & Document Continuity (Ghi Nối tiếp)**
+**[K09] Append-Only, Compaction & ADR Continuity (Ghi Nối tiếp & Hồ Sơ Quyết Định)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
-- `THUMB_RULE`: Cấm xóa trắng hoặc ghi đè (overwrite) làm mất dấu vết tài liệu cũ. Kế thừa và trích dẫn tài liệu gốc.
-- `TRIGGER`: Cập nhật tài liệu SRS, Runbook, Data Dictionary, API Specs.
+- `THUMB_RULE`: Cấm xóa trắng hoặc ghi đè làm mất dấu vết lịch sử; áp dụng chu kỳ cô đọng (Compaction) khi kết thúc Sprint và chuẩn hóa ghi nhận quyết định kiến trúc (ADR).
+- `TRIGGER`: Cập nhật tài liệu SRS, Runbook, Data Dictionary, API Specs hoặc khi thông qua quyết định kiến trúc mới.
 - `ACTION`:
-  1. Khi cập nhật: Giữ nguyên lịch sử, thêm nội dung mới vào cuối mục lục tương ứng hoặc đánh dấu phiên bản bổ sung.
-  2. Khi tạo file mới: Bắt buộc dẫn link tham chiếu đến tài liệu gốc (Master Plan, SRS) liên quan.
+  1. **Pha trong Sprint (Append-Only)**: Giữ nguyên lịch sử, thêm nội dung mới vào cuối mục lục tương ứng, dẫn link ngược về tài liệu gốc.
+  2. **Pha đóng Sprint (Document Compaction Protocol)**: Tổng hợp các đoạn ghi chép bổ sung thành bản quy chuẩn tinh gọn cho Sprint mới; chuyển bản cũ sang `docs/archive/` theo chuẩn [K10].
+  3. **Hồ sơ Quyết định Kiến trúc (ADR)**: Mọi quyết định thay đổi nền tảng (chuyển đổi pattern, chọn thư viện, đổi cấu trúc dữ liệu) bắt buộc tạo 1 bản ghi tại `docs/adr/ADR-xxxx_<ten_quyet_dinh>.md` ($< 50$ dòng) theo mẫu: `[Bối cảnh] -> [Quyết định] -> [Hệ quả kỹ thuật]`.
 
 **[K10] Document Archiving (Cô lập & Lưu trữ Tài liệu Cũ)**
 - `[SEVERITY]`: 🟢 Medium
@@ -123,12 +124,15 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 - `TRIGGER`: Khi thay đổi lớn về kiến trúc hoặc thay thế hoàn toàn một tài liệu hướng dẫn.
 - `ACTION`: Thêm thẻ `[DEPRECATED: YYYY-MM-DD - Thay thế bởi path/to/new_file.md]` vào đầu file cũ, sau đó chuyển file vào thư mục `docs/archive/`.
 
-**[K11] Auto-README Refactoring (Cấu trúc README Tối giản)**
+**[K11] Auto-README Refactoring & System Manifest (Bản Đồ Kiến Trúc Tối Giản)**
 - `[SEVERITY]`: 🟢 Medium
 - `[SPRINT]`: All
-- `THUMB_RULE`: File `README.md` tại thư mục gốc không vượt quá 100 dòng.
+- `THUMB_RULE`: File `README.md` tại thư mục gốc không vượt quá 100 dòng nhưng bắt buộc đóng vai trò Bản đồ Hệ thống (System Manifest) đủ thông tin định vị.
 - `TRIGGER`: Khi chỉnh sửa hoặc cập nhật `README.md`.
-- `ACTION`: Chỉ duy trì thông tin tổng quan, hướng dẫn khởi chạy nhanh (Quick Start) và Mục lục (Table of Contents) trỏ đến các tài liệu chi tiết trong `docs/`.
+- `ACTION`: Cấu trúc 100 dòng của `README.md` bắt buộc chứa đủ 3 phần:
+  1. **Tech Stack & Runtime Manifest**: Phiên bản chuẩn (.NET 10, Blazor Server/WASM, PostgreSQL, Hangfire).
+  2. **Cây Thư Mục Cấp 1 & Vai Trò**: Mỗi thư mục gốc đi kèm 1 dòng mô tả ngắn gọn trách nhiệm nghiệp vụ.
+  3. **Mục Lục Chỉ Mục Nóng (Hot-Links)**: Trỏ trực tiếp đến 3 tài liệu sống: `docs/specs/data_dictionary.md`, `docs/specs/api_contracts.md`, và Sprint Runbook hiện hành.
 
 ---
 
@@ -171,14 +175,15 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   3. Mọi câu lệnh DDL bên trong phải có mệnh đề an toàn `IF NOT EXISTS` hoặc `IF EXISTS` ([K53]).
   4. Thực thi script SQL qua công cụ psql ([K25]), sau đó chạy EF Core Scaffold (`dotnet ef dbcontext scaffold`) để cập nhật lại Entity.
 
-**[K15] Schema-Spec Verification (Đồng bộ CSDL & Tài liệu Đặc tả)**
+**[K15] Schema & API Contract Verification (Đồng bộ CSDL, API & Đặc Tả)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
-- `THUMB_RULE`: Tài liệu đặc tả từ điển dữ liệu (Data Dictionary/SRS) và schema CSDL vật lý phải luôn khớp nhau 100%.
-- `TRIGGER`: Khi thêm mới bảng, đổi tên cột, sửa kiểu dữ liệu hoặc sửa quan hệ bảng.
+- `THUMB_RULE`: Không để lệch pha tài liệu ở cả hai tầng: Schema CSDL vật lý và Hợp đồng giao tiếp API/DTO.
+- `TRIGGER`: Khi thêm mới/sửa bảng, cột CSDL, hoặc thay đổi trường trong các MediatR Command/Query DTOs.
 - `ACTION`:
-  1. Đối chiếu trực tiếp giữa file DDL SQL thực thi và file đặc tả (`docs/specs/data_dictionary.md`).
-  2. Cập nhật ngay lập tức các định nghĩa trường, quan hệ, ràng buộc vào file đặc tả trước khi chốt commit.
+  1. **Tầng Database**: Đối chiếu $100\%$ giữa file DDL SQL thực thi và Data Dictionary (`docs/specs/data_dictionary.md`).
+  2. **Tầng API Contract**: Đối chiếu giữa các lớp DTO Request/Response trong C# và tài liệu đặc tả giao tiếp (`docs/specs/api_contracts.md` hoặc Swagger/OpenAPI spec).
+  3. Cập nhật đồng thời tài liệu đặc tả trước khi chốt commit tính năng, không tách rời sang commit sau.
 
 **[K16] Bidirectional Navigation Mapping (Cấu hình Điều hướng 2 Chiều)**
 - `[SEVERITY]`: 🔴 Critical
@@ -516,22 +521,23 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   1. Dùng Moq hoặc WireMock để giả lập phản hồi của hệ thống ngoại vi.
   2. Bắt buộc kiểm thử đầy đủ các kịch bản: Timeout, lỗi 429 Too Many Requests, 500 Internal Server Error và dữ liệu trả về sai cấu trúc.
 
-**[K48] Definition of Done (Tiêu chuẩn Hoàn tất Tính năng - DoD)**
+**[K48] Definition of Done & Doc Gate (Tiêu chuẩn Hoàn tất & Cổng Tài liệu - DoD)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: 1
-- `THUMB_RULE`: Một tính năng chỉ được xem là hoàn tất khi đã thỏa mãn toàn bộ các tiêu chuẩn kiểm thử, tài liệu và build sạch.
+- `THUMB_RULE`: Một tính năng chỉ được nghiệm thu hoàn tất khi thỏa mãn toàn bộ tiêu chuẩn kiểm thử, build sạch và tài liệu liên quan đã được đồng bộ 100%.
 - `TRIGGER`: Đánh dấu một User Story hoặc Task là Hoàn thành (Done).
-- `ACTION`: Xác nhận đủ 5 tiêu chí:
+- `ACTION`: Xác nhận đủ 6 tiêu chí:
   1. Code build 0 warning, 0 error.
   2. Có unit test bao phủ các nhánh xử lý cốt lõi.
   3. Đã chạy thử nghiệm thực tế thành công trên môi trường cục bộ.
-  4. Toàn bộ nợ kỹ thuật phát sinh đều được log vào `tech_debt_report.md` ([K07]).
-  5. Commit tuân thủ chuẩn Conventional Commits ([K08]).
+  4. Đã cập nhật Data Dictionary và API Contracts tương ứng ([K15]).
+  5. Toàn bộ nợ kỹ thuật phát sinh đều được log vào `tech_debt_report.md` ([K07]).
+  6. Commit tuân thủ chuẩn Conventional Commits ([K08]).
 
-**[K49] Pre-Commit Quality Checklist (Chuỗi Kiểm tra Bắt buộc Trước Commit)**
+**[K49] Pre-Commit Quality Checklist & Doc Drift Scan (Chuỗi Kiểm tra Bắt buộc)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: 1
-- `THUMB_RULE`: Chặn đứng mã lỗi hoặc mã chưa chuẩn format trước khi ghi vào kho mã nguồn.
+- `THUMB_RULE`: Chặn đứng mã lỗi, mã sai định dạng, lọt secret hoặc lệch pha tài liệu trước khi ghi vào kho mã nguồn.
 - `TRIGGER`: Trước khi chạy lệnh `git commit`.
 - `ACTION`: Chạy chuỗi lệnh kiểm tra:
   1. `dotnet format --verify-no-changes`
@@ -539,6 +545,7 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   3. `dotnet test`
   4. Quét kiểm tra bí mật (Secret scan) qua script tự động.
   5. Quét kiểm tra UI Audit ([K35]).
+  6. **Doc Drift Scan**: Nếu commit có chứa file DDL `*.sql` hoặc file DTO C#, bắt buộc kiểm tra xem có file tương ứng trong `docs/specs/` được commit kèm hay không; cảnh báo hoặc dừng commit nếu thiếu.
 
 **[K50] Dependency Locking (Khóa Cứng Phiên bản Package)**
 - `[SEVERITY]`: 🟡 High
@@ -701,7 +708,7 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 - `TRIGGER`: Khi biên soạn các bước kỹ thuật trong Runbook.
 - `ACTION`: Bổ sung khối cảnh báo ngay dưới bước thao tác:
   ```markdown
-  > ⚠️ [LỆCH CHUẨN DỰ KIẾN]: Nếu thao tác sai ở bước này, hệ thống sẽ báo lỗi `CS0104`.
+  > ⚠️️ [LỆCH CHUẨN DỰ KIẾN]: Nếu thao tác sai ở bước này, hệ thống sẽ báo lỗi `CS0104`.
   > - Nguyên nhân: Trùng lặp namespace.
   > - Khắc phục nhanh: Thêm tiền tố định danh rõ ràng.
   ```
@@ -742,14 +749,16 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 - `TRIGGER`: Kết thúc mỗi phiên làm việc kỹ thuật.
 - `ACTION`: Ghi nhận tối thiểu 3 khái niệm cốt lõi đã nắm vững vào `docs/notes/concepts_mastered.md`.
 
-**[K70] Daily Log & Context Synchronization (Đồng bộ Bối cảnh Hàng ngày)**
+**[K70] Daily Log Rotation & Context Synchronization (Xoay Vòng Nhật Ký & Đồng Bộ)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
-- `THUMB_RULE`: Không bao giờ làm việc khi mất dấu vết lịch sử. Phải đồng bộ bối cảnh qua nhật ký ngày.
+- `THUMB_RULE`: Không bao giờ làm việc khi mất dấu vết lịch sử; đồng thời ngăn chặn lãng phí bộ nhớ token do nhật ký phình to quá mức (Daily Log Token Inflation).
 - `TRIGGER`: Bắt đầu một phiên làm việc mới hoặc chuyển giao giữa các Agent.
 - `ACTION`:
-  1. Đọc nội dung file `docs/notes/daily.md` trước tiên để nắm bắt tiến độ hôm trước.
-  2. Cập nhật các đầu việc đã hoàn thành và việc còn tồn đọng vào file này ở cuối phiên làm việc.
+  1. **Quy tắc Cửa sổ 3 Ngày (3-Day Active Window)**: File `docs/notes/daily.md` hiện hành CHỈ lưu nhật ký của tối đa 3 ngày làm việc gần nhất.
+  2. **Quy tắc Xoay Vòng (Log Rotation Protocol)**: Đầu mỗi tuần hoặc khi nhật ký vượt quá 3 ngày, Agent tự động di dời các ngày cũ hơn vào file lưu trữ theo tháng (`docs/notes/daily_YYYY_MM.md`) hoặc theo Sprint (`docs/sprints/sprint_<X>/daily.md`).
+  3. **Đầu phiên**: Đọc `docs/notes/daily.md` để nắm bắt tiến độ nóng.
+  4. **Cuối phiên**: Ghi nhận các đầu việc hoàn thành, vướng mắc còn lại vào cuối file `docs/notes/daily.md`.
 
 **[K71] Context Assimilation (Chủ động Tự tra cứu Codebase)**
 - `[SEVERITY]`: 🟡 High
