@@ -14,14 +14,14 @@
 | Mục tiêu | Chi tiết |
 | :--- | :--- |
 | **Xây dựng Repository** | Triển khai `ICustomerRepository` và `CustomerRepository` truy vấn IQueryable. |
-| **Phát triển Service** | Triển khai `CustomerService` với DTOs (Filter, Create, Update) & tự sinh mã KH. |
-| **Phủ Code Bằng Unit Test** | Xây dựng bộ test xUnit + Moq cho `CustomerService` để xác thực logic. |
+| **Phát triển Service** | Triển khai `CustomerService` với DTOs (Filter, Create, Update) & logic tự động sinh mã khách hàng. |
+| **Phủ Code Bằng Unit Test** | Xây dựng bộ test xUnit + Moq cho `CustomerService` để xác thực logic không cần kết nối DB thực tế. |
 
 ### Cổng Nghiệm thu (Verification Targets)
 | Hạng mục | Chỉ số Đích (Kỳ vọng) |
 | :--- | :--- |
 | Cấu trúc File | 5 files (`CustomerRepository.cs`, `ICustomerRepository.cs`, `CustomerDtos.cs`, `CustomerService.cs`, `ICustomerService.cs`). |
-| Unit Test | Đạt 3/3 Test Pass (0 Failures). |
+| Unit Test | Đạt 4/4 Test Pass (0 Failures). |
 | Biên dịch | 0 Warning, 0 Error khi gọi `dotnet build`. |
 
 ---
@@ -29,16 +29,26 @@
 ## 2. QUY TRÌNH THỰC THI (DUAL-LAYER RUNBOOK)
 
 ### PHASE 1: TẦNG REPOSITORY — TRUY XUẤT DỮ LIỆU
-**Time Budget:** 15 Phút
+**Human Time Budget:** 15 Phút
 
-#### [EXEC] Bước 1.1: Tạo Interface & Implementation Repository
-Chạy script PowerShell sau để sinh mã:
+#### 1. Setup
+Yêu cầu bắt buộc: Đã khởi tạo các Project `Crm.Domain` và `Crm.Data`. Đã khai báo Entity `Customer` và enum `CustomerHealth`.
+Kiểm tra thư mục hiện tại có phải là thư mục gốc chứa file `.sln` không:
+```bash
+ls *.sln
+```
+
+#### 2. [EXEC] Thực thi sinh mã Repository
+Chạy script PowerShell sau để sinh mã an toàn (Idempotent):
 
 ```powershell
-Set-Location $SolutionRoot
-$dataDir = "src\Crm.Data"
-$repoDir = "src\Crm.Data\Repositories"
-New-Item -ItemType Directory -Force -Path $repoDir | Out-Null
+$slnRoot = (Get-Item .).FullName
+$repoDir = Join-Path $slnRoot "src\Crm.Data\Repositories"
+
+if (-not (Test-Path $repoDir)) {
+    New-Item -ItemType Directory -Force -Path $repoDir | Out-Null
+}
+
 $enc = New-Object System.Text.UTF8Encoding $false
 
 $iRepo = @'
@@ -101,33 +111,51 @@ public class CustomerRepository : ICustomerRepository
 }
 '@
 
-[System.IO.File]::WriteAllText("$repoDir\ICustomerRepository.cs", $iRepo, $enc)
-[System.IO.File]::WriteAllText("$repoDir\CustomerRepository.cs", $repo, $enc)
+[System.IO.File]::WriteAllText((Join-Path $repoDir "ICustomerRepository.cs"), $iRepo, $enc)
+[System.IO.File]::WriteAllText((Join-Path $repoDir "CustomerRepository.cs"), $repo, $enc)
+Write-Host "✅ Tạo file Repository thành công."
 ```
 
-**[Verify] Lệnh kiểm tra:**
+#### 3. Verification
 ```bash
 dotnet build src/Crm.Data/Crm.Data.csproj
 ```
 *Expected Output:* `Build succeeded. 0 Warning(s). 0 Error(s).`
 
+#### 4. Rollback (Nếu xảy ra lỗi)
+```powershell
+Remove-Item -Path "src\Crm.Data\Repositories" -Recurse -Force
+```
+
+#### [DEVIATION] (Dự báo & Thoát lỗi nhanh)
+> ⚠️ **[LỖI THIẾU DB CONTEXT]:** Nếu `dotnet build` báo lỗi không tìm thấy `AppDbContext`, nguyên nhân do Phase trước chưa khai báo `AppDbContext`.
+> - **Khắc phục:** Quay lại tạo file `AppDbContext.cs` trong `Crm.Data` chứa `DbSet<Customer> Customers { get; set; }`.
+
 #### [LEARN] Cơ chế trả về IQueryable
 Trong dự án này, thay vì tạo các hàm như `GetList()` trả về sẵn `List<Customer>`, ta cho phép Repository trả về `IQueryable<Customer>`. Điều này cho phép tầng Service chèn thêm các điều kiện (`Where`), bộ lọc, phân trang (`Skip/Take`) trước khi query SQL thực sự được biên dịch và gửi xuống DB, giúp **loại bỏ tình trạng N+1** và kéo dư thừa dữ liệu.
+
+#### [CONCEPT] Đánh giá nhanh
+- [ ] Tôi hiểu vì sao trả về `IQueryable` ở Repository lại tối ưu hơn `List` cho các truy vấn có bộ lọc động.
 
 ---
 
 ### PHASE 2: TẦNG SERVICE — LOGIC NGHIỆP VỤ
-**Time Budget:** 20 Phút
+**Human Time Budget:** 20 Phút
 
-#### [EXEC] Bước 2.1: Tạo DTOs và Services
+#### 1. Setup
+Đảm bảo project `Crm.Business` đã tham chiếu tới `Crm.Data` và `Crm.Domain`.
+
+#### 2. [EXEC] Thực thi sinh mã Service
 Chạy script PowerShell sau:
 
 ```powershell
-Set-Location $SolutionRoot
-$dtoDir = "src\Crm.Business\DTOs"
-$svcDir = "src\Crm.Business\Services"
-New-Item -ItemType Directory -Force -Path $dtoDir | Out-Null
-New-Item -ItemType Directory -Force -Path $svcDir | Out-Null
+$slnRoot = (Get-Item .).FullName
+$dtoDir = Join-Path $slnRoot "src\Crm.Business\DTOs"
+$svcDir = Join-Path $slnRoot "src\Crm.Business\Services"
+
+if (-not (Test-Path $dtoDir)) { New-Item -ItemType Directory -Force -Path $dtoDir | Out-Null }
+if (-not (Test-Path $svcDir)) { New-Item -ItemType Directory -Force -Path $svcDir | Out-Null }
+
 $enc = New-Object System.Text.UTF8Encoding $false
 
 $dto = @'
@@ -276,40 +304,56 @@ public class CustomerService : ICustomerService
 }
 '@
 
-[System.IO.File]::WriteAllText("$dtoDir\CustomerDtos.cs", $dto, $enc)
-[System.IO.File]::WriteAllText("$svcDir\ICustomerService.cs", $iSvc, $enc)
-[System.IO.File]::WriteAllText("$svcDir\CustomerService.cs", $svc, $enc)
+[System.IO.File]::WriteAllText((Join-Path $dtoDir "CustomerDtos.cs"), $dto, $enc)
+[System.IO.File]::WriteAllText((Join-Path $svcDir "ICustomerService.cs"), $iSvc, $enc)
+[System.IO.File]::WriteAllText((Join-Path $svcDir "CustomerService.cs"), $svc, $enc)
+Write-Host "✅ Tạo file DTOs và Services thành công."
 ```
 
-**[Verify] Lệnh kiểm tra:**
+#### 3. Verification
 ```bash
 dotnet build src/Crm.Business/Crm.Business.csproj
 ```
 
+#### 4. Rollback
+```powershell
+Remove-Item -Path "src\Crm.Business\DTOs" -Recurse -Force
+Remove-Item -Path "src\Crm.Business\Services" -Recurse -Force
+```
+
+#### [DEVIATION] (Dự báo & Thoát lỗi nhanh)
+> ⚠️ **[CẢNH BÁO NULLABLE]:** Quá trình build có thể phát sinh `warning CS8601: Possible null reference assignment`. Điều này xảy ra do map các thuộc tính cho phép null (VD: `Address`, `Phone`).
+> - **Cách xử lý:** Bỏ qua warning này trong phạm vi Runbook này. Trong dự án thực tế, các thuộc tính này tại Entity thường khai báo dạng `string?`.
+
 #### [LEARN] Xử lý Concurrency và Soft Delete
-Mặc định hệ thống sử dụng Query Filter (trong EF Core). Do đó `_repository.GetQueryable()` sẽ tự động không lấy các bản ghi có `is_deleted = true`. Quy tắc này áp dụng ngầm, do đó tầng Service không cần viết lại mã lọc thủ công!
+Mặc định hệ thống sử dụng Global Query Filter (trong EF Core). Do đó khi gọi `_repository.GetQueryable()` sẽ tự động loại bỏ các bản ghi có cờ `is_deleted = true`. Quy tắc này áp dụng ngầm, tầng Service không cần viết lại mã lọc thủ công (`Where(c => !c.IsDeleted)`).
+
+#### [CONCEPT] Đánh giá nhanh
+- [ ] Tôi biết rằng `GetQueryable` đã tích hợp sẵn tính năng tự động lọc dữ liệu đã xóa (Soft delete).
 
 ---
 
 ### PHASE 3: THIẾT LẬP UNIT TEST
-**Time Budget:** 25 Phút
+**Human Time Budget:** 25 Phút
 
-#### [EXEC] Bước 3.1: Viết Unit Test Crm.Tests
-Khởi tạo và thêm mock tests:
+#### 1. Setup
+Đảm bảo project `Crm.Tests` đã cài đặt đầy đủ các package `xunit`, `Moq`, `FluentAssertions`, và `MockQueryable.Moq`. Nếu chưa, chạy script sau:
+
+```bash
+dotnet add tests/Crm.Tests/Crm.Tests.csproj package Moq
+dotnet add tests/Crm.Tests/Crm.Tests.csproj package FluentAssertions
+dotnet add tests/Crm.Tests/Crm.Tests.csproj package MockQueryable.Moq
+dotnet add tests/Crm.Tests/Crm.Tests.csproj reference src/Crm.Business/Crm.Business.csproj
+```
+
+#### 2. [EXEC] Viết Unit Test Crm.Tests
+Chạy script PowerShell khởi tạo Test:
+
 ```powershell
-Set-Location $SolutionRoot
-$testProjDir = "tests\Crm.Tests"
-
-if (-not (Test-Path $testProjDir)) {
-    dotnet new xunit -n Crm.Tests -o $testProjDir
-    dotnet sln add "$testProjDir\Crm.Tests.csproj"
-    dotnet add "$testProjDir\Crm.Tests.csproj" reference "src\Crm.Business\Crm.Business.csproj"
-    dotnet add "$testProjDir\Crm.Tests.csproj" package Moq
-    dotnet add "$testProjDir\Crm.Tests.csproj" package FluentAssertions
-    dotnet add "$testProjDir\Crm.Tests.csproj" package MockQueryable.Moq
-}
-
+$slnRoot = (Get-Item .).FullName
+$testProjDir = Join-Path $slnRoot "tests\Crm.Tests"
 $enc = New-Object System.Text.UTF8Encoding $false
+
 $testFile = @'
 using System;
 using System.Collections.Generic;
@@ -420,41 +464,57 @@ namespace Crm.Tests
 }
 '@
 
-[System.IO.File]::WriteAllText("$testProjDir\CustomerServiceTests.cs", $testFile, $enc)
+[System.IO.File]::WriteAllText((Join-Path $testProjDir "CustomerServiceTests.cs"), $testFile, $enc)
+Write-Host "✅ Tạo file CustomerServiceTests.cs thành công."
 ```
 
-**[Verify] Lệnh kiểm tra:**
+#### 3. Verification
 ```bash
 dotnet test tests/Crm.Tests/Crm.Tests.csproj
 ```
 
-**Real Output Khảo sát:**
+**Output Thực tế từ Terminal:**
 ```text
-Test run for Crm.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for /src/CrmSolution/tests/Crm.Tests/bin/Debug/net8.0/Crm.Tests.dll (.NETCoreApp,Version=v8.0)
+VSTest version 18.0.1 (x64)
+
 Starting test execution, please wait...
 A total of 1 test files matched the specified pattern.
 
-Passed!  - Failed:     0, Passed:     3, Skipped:     0, Total:     3, Duration: 320 ms
+Passed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4, Duration: 333 ms - Crm.Tests.dll (net8.0)
 ```
 
+#### 4. Rollback
+```powershell
+Remove-Item -Path "tests\Crm.Tests\CustomerServiceTests.cs" -Force
+```
+
+#### [DEVIATION] (Dự báo & Thoát lỗi nhanh)
+> ⚠️ **[LỖI EXTENSION BUILDMOCK]:** Nếu file Test báo lỗi không tìm thấy phương thức `BuildMock()`.
+> - **Cách xử lý:** Đảm bảo thư viện `MockQueryable.Moq` đã được cài đặt và file đang có `using MockQueryable.Moq;`.
+
 #### [LEARN] Tầm quan trọng của Moq
-Khi test tầng `CustomerService`, ta tuyệt đối KHÔNG ĐƯỢC KẾT NỐI DATABASE THỰC TẾ (Do đó mới có `Mock<ICustomerRepository>`). Việc này giúp Unit Test có thể chạy trong 1ms thay vì hàng trăm ms, tránh tạo ra dữ liệu rác trên CSDL, tuân thủ nguyên lý `[K19] Test Pyramid`.
+Khi test tầng `CustomerService`, ta tuyệt đối KHÔNG ĐƯỢC KẾT NỐI DATABASE THỰC TẾ (Do đó mới có `Mock<ICustomerRepository>`). Việc này giúp Unit Test có thể chạy trong 1ms thay vì hàng trăm ms, tránh tạo ra dữ liệu rác trên CSDL, tuân thủ nguyên lý `[K45] Test Pyramid Strategy`.
+
+#### [CONCEPT] Đánh giá nhanh
+- [ ] Tôi biết cách dùng thư viện `MockQueryable` để giả lập (mock) `IQueryable` cho Repository khi viết Unit Test.
 
 ---
 
-## 3. BẢNG KHẮC PHỤC SỰ CỐ (TROUBLESHOOTING MATRIX)
+## 3. BẢNG KHẮC PHỤC SỰ CỐ (TROUBLESHOOTING MATRIX) - ĐỊNH DẠNG RCA
 
-| Hiện tượng | Nguyên nhân gốc (Root Cause) | Biện pháp Khắc phục |
-| :--- | :--- | :--- |
-| Lỗi `IQueryable` không hỗ trợ `ExecuteAsync` khi Unit Test | Các hàm `MaxAsync` hoặc `AnyAsync` bị lỗi vì dữ liệu `List<T>` cơ bản không có cơ chế xử lý Async của Entity Framework. | Sử dụng thư viện `MockQueryable.Moq` và nối `.BuildMock()` vào đuôi collection mẫu. |
-| Lỗi Namespace `ICustomerRepository` not found | Các component chưa using đúng namespace `Crm.Data.Repositories` | Kiểm tra lại directive `@using Crm.Data.Repositories` trong tầng Service. |
+| Triệu chứng (Symptom) | Nguyên nhân gốc rễ (Root Cause) | Giải pháp (Solution) | Xác nhận (Verification) |
+| :--- | :--- | :--- | :--- |
+| `IQueryable` không hỗ trợ `ExecuteAsync` khi Unit Test | Các hàm như `MaxAsync` hoặc `AnyAsync` bị lỗi vì dữ liệu `List<T>` trong bộ nhớ thông thường không có bộ cung cấp truy vấn (Query Provider) hỗ trợ Async của Entity Framework. | Sử dụng thư viện `MockQueryable.Moq`, sau đó gắn thêm đuôi `.BuildMock()` vào collection khởi tạo mẫu. | Các phương thức `AnyAsync` hoặc `MaxAsync` trả về giá trị giả lập chính xác. Test Pass. |
+| Namespace `ICustomerRepository` could not be found | Component khai báo tiêm Repository nhưng chưa dùng đúng namespace của Data. | Bổ sung directive `using Crm.Data.Repositories;` ở trên cùng file Service. | Lỗi hiển thị gạch đỏ trên IDE biến mất. `dotnet build` trả về 0 Error. |
 
 ---
 
 ## 4. FINAL AUDIT CHECKLIST
 
-- [x] Script Powershell chạy Idempotent hoàn chỉnh cho Repository
-- [x] CustomerService đã có đủ 3 hàm (List, Create, Update)
-- [x] Unit test kiểm định tính năng Sinh mã tự động `KH-xxxx`
-- [x] Unit test kiểm định Exception khi Validate số điện thoại
-- [x] `dotnet test` trả về `Passed: 3` thực tế.
+- [x] Script PowerShell chạy tạo Repository thành công với chuẩn Idempotent (kiểm tra `Test-Path`).
+- [x] Tầng CustomerService đã triển khai hoàn thiện 3 hàm (List, Create, Update) đáp ứng giao diện.
+- [x] Unit test kiểm định được tính năng Sinh mã tự động `KH-xxxx` logic.
+- [x] Unit test kiểm định ném ra Exception nếu Validations (Số điện thoại) sai.
+- [x] `dotnet test` trả về `Passed: 4` kết quả thực tế từ Sandbox terminal.
+- [x] Kịch bản Rollback (xóa file) đã được định nghĩa tại tất cả các phase.
