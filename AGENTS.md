@@ -184,3 +184,52 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 - `THUMB_RULE`: Không đoán lỗi, không để lại rác.
 - `TRIGGER`: Debug lỗi, thử nghiệm Kỹ thuật mới.
 - `ACTION`: Tự sinh file test nhỏ để chạy thực tế -> Dọn sạch file test, log, thư viện tạm sau khi xong.
+
+---
+
+## APPENDIX: EXECUTION TEMPLATES (BIỂU MẪU THỰC THI BẮT BUỘC)
+
+Để đảm bảo khả năng thực thi (Execution) chính xác 100%, mọi Agent phải sử dụng các biểu mẫu sau khi sinh tài liệu/code:
+
+### 1. Form Dual-Layer Runbook (Chuẩn K14)
+Mỗi Phase trong Runbook bắt buộc tuân theo cấu trúc:
+```markdown
+### Phase 1: [Tên Phase] (Time budget: X phút)
+
+**[EXEC] - Thực thi:**
+1. Chạy lệnh:
+   ` ` `bash
+   <lệnh>
+   ` ` `
+2. Output thực tế (Real Output):
+   ` ` `text
+   <copy output thật vào đây>
+   ` ` `
+
+**[DEVIATION] - Xử lý sự cố:**
+- Lỗi: <Tên lỗi>
+- Fix: <Lệnh khắc phục>
+
+**[LEARN] - Khái niệm:**
+- Tại sao phải làm bước này: <giải thích ngắn gọn>
+
+**[CONCEPT] - Xác nhận:**
+- [ ] Đã hiểu khái niệm X.
+```
+
+### 2. Form Root Cause Analysis (RCA chuẩn K14)
+Khi báo cáo lỗi/Tech Debt, phải điền đủ 4 mục:
+```markdown
+- **Symptom (Triệu chứng):** Hệ thống văng lỗi X khi bấm nút Y.
+- **Root Cause (Nguyên nhân):** Do query thiếu .AsSplitQuery() làm tràn RAM.
+- **Solution (Giải pháp):** Đổi thành .AsSplitQuery() trong Handler.
+- **Verification (Nghiệm thu):** Lệnh test `dotnet test` trả về Passed.
+```
+
+### 3. Form PowerShell/psql chuẩn (Chuẩn K16)
+```powershell
+chcp 65001
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$env:PGCLIENTENCODING = "UTF8"
+psql -h localhost -U crm_user -d crm_db -P pager=off -f file.sql
+```
