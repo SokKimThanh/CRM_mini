@@ -24,14 +24,17 @@ public class OpportunityConfiguration : IEntityTypeConfiguration<Opportunity>
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()");
 
             entity.HasOne(d => d.Contact).WithMany(p => p.Opportunities)
+                .HasForeignKey(d => d.ContactId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Opportunities)
+                .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict)
                 ;
 
             entity.HasOne(d => d.Stage).WithMany(p => p.Opportunities)
+                .HasForeignKey(d => d.StageId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 ;
         

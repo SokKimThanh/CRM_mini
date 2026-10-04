@@ -766,3 +766,35 @@ Cần định dạng một thành phần giao diện?
      - **[LEARN]**: khái niệm, lý do, cách debug.
   2. Phân bổ thời gian: 70–75% EXEC, 25–30% LEARN.
   3. Cuối mỗi phase có **[CONCEPT]**: gạch đầu dòng khái niệm cần nắm.
+
+## BLOCK 20: [AI_META_SKILLS] — Kỹ năng tự học và thích ứng của AI
+
+**[K68] Daily Log & Context Synchronization (Đồng bộ bối cảnh)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không bao giờ code mù. Phải đọc daily log để biết lịch sử.
+- `TRIGGER`: Bắt đầu phiên làm việc hoặc khởi tạo task mới.
+- `ACTION`: Đọc `docs/notes/daily.md`, nắm bắt ngữ cảnh, và report lại cho User ở đầu session. Cập nhật file ở cuối session.
+
+**[K69] Context Assimilation (Thẩm thấu bối cảnh)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Tự thân vận động. Không hỏi lại user nếu thông tin có thể grep/cat/find.
+- `TRIGGER`: Khi gặp câu hỏi mở, hoặc gặp biến/class lạ.
+- `ACTION`: Dùng lệnh bash rà quét toàn codebase thay vì yêu cầu user chỉ chỗ.
+
+**[K70] Sandbox Experimentation (Kiểm chứng qua hộp cát)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không dùng suy luận lý thuyết suông để đoán lỗi (Hallucinate). Phải chạy code thật.
+- `TRIGGER`: Khi user hỏi "Tại sao code này sinh lỗi/bug?".
+- `ACTION`: Tạo ngay 1 file unit test / script nhỏ bằng in-memory DB để chạy và lấy console output làm bằng chứng. Bắt lỗi thực tế và đưa RCA (Root Cause Analysis).
+
+**[K71] Clean Test Artifacts (Dọn dẹp rác hậu kiểm thử)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không để lại dấu vết sandbox trong codebase chính.
+- `TRIGGER`: Sau khi thực thi K70 hoặc chạy xong các Sandbox test scripts.
+- `ACTION`:
+  1. Xóa toàn bộ file test, log, txt vừa sinh ra phục vụ quá trình dò lỗi (VD: `SchemaTest.cs`, `ef_model_debug.txt`).
+  2. Revert các cài đặt package tạm (như `Microsoft.EntityFrameworkCore.InMemory`) nếu không phục vụ mục đích test lâu dài của dự án.
