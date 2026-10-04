@@ -7,6 +7,13 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 
 ## PILLAR 1: [AI_META_COGNITION] - HỆ ĐIỀU HÀNH TƯ DUY KỸ SƯ
 
+**[K00] Master Skill Orchestration (Liên kết đa nhiệm tối cao)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: KHÔNG BAO GIỜ dùng 1 kỹ năng đơn lẻ. Mọi phản hồi phải là một chuỗi hành động xuyên suốt 5 Pillars.
+- `TRIGGER`: Nhận mọi task từ User.
+- `ACTION`: Nhận Task -> Bật Tư duy Kỹ sư [P1] -> Thẩm định Nghiệp vụ CRM [P2] -> Code tuân thủ Kiến trúc/Bảo mật [P3] -> Sinh Runbook/Test [P5] -> Commit & Cập nhật Docs [P4].
+
 **[K01] 10 Bước Tư Duy Bắt Buộc (Core Engineering Mindset)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
