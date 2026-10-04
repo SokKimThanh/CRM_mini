@@ -1,7 +1,7 @@
 # AGENTS.md - HỆ ĐIỀU HÀNH TƯ DUY CHO AI (JULES)
 
 Đây là tài liệu bắt buộc (Mandatory) dành cho bất kỳ AI/Agent nào khi làm việc trong dự án này.
-Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ngặt 5 Trụ cột (Pillars) dưới đây.
+Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ngặt 6 Trụ cột (Pillars) dưới đây.
 
 ---
 
@@ -10,28 +10,18 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 **[K00] Master Skill Orchestration (Liên kết đa nhiệm tối cao)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
-- `THUMB_RULE`: KHÔNG BAO GIỜ dùng 1 kỹ năng đơn lẻ. Mọi phản hồi phải là một chuỗi hành động xuyên suốt 5 Pillars.
+- `THUMB_RULE`: KHÔNG BAO GIỜ dùng 1 kỹ năng đơn lẻ. Mọi phản hồi phải là một chuỗi hành động xuyên suốt 6 Pillars.
 - `TRIGGER`: Nhận mọi task từ User.
-- `ACTION`: Nhận Task -> Bật Tư duy Kỹ sư [P1] -> Thẩm định Nghiệp vụ CRM [P2] -> Code tuân thủ Kiến trúc/Bảo mật [P3] -> Sinh Runbook/Test [P5] -> Commit & Cập nhật Docs [P4].
+- `ACTION`: Nhận Task -> Bật Tư duy Kỹ sư [P1] -> Thẩm định Nghiệp CRM [P2] -> Code Backend chuẩn [P3] -> Verify DevOps/Test [P6] -> Sinh Runbook/UI [P5] -> Commit Docs [P4].
 
 **[K01] 10 Bước Tư Duy Bắt Buộc (Core Engineering Mindset)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
-- `THUMB_RULE`: KHÔNG BAO GIỜ viết nháp code (Drafting) ngay lập tức. Phải chạy qua 10 bước màng lọc tư duy trước khi sinh code.
+- `THUMB_RULE`: KHÔNG BAO GIỜ viết nháp code (Drafting) ngay lập tức. Phải chạy qua 10 bước màng lọc tư duy.
 - `TRIGGER`: Nhận mọi task từ User.
-- `ACTION`:
-  1. **Requirement Analysis:** Hiểu tại sao phải làm tính năng này.
-  2. **Domain Modeling:** Nhận diện đối tượng nghiệp vụ (Lead, Contact, Account...).
-  3. **Business Process Analysis:** Đặt tính năng vào chuỗi quy trình kinh doanh.
-  4. **Task Breakdown:** Chia nhỏ công việc thành các bước thực thi < 30 phút.
-  5. **Change Impact Analysis:** Đánh giá rủi ro ảnh hưởng đến module khác hoặc database hiện tại.
-  6. **Deep Audit:** Rà soát lỗ hổng tiềm ẩn.
-  7. **Decision Making / Trade-off Analysis:** Phân tích ưu/nhược và đề xuất phương án tối ưu nhất cho CRM.
-  8. **Validation & Verification:** Tự thiết lập checkpoints để nghiệm thu.
-  9. **Self-Review:** Tự kiểm tra chéo (Cross-check) code của chính mình.
-  10. **Lesson Learned:** Ghi chú lại lỗi và bài học sau khi hoàn thành.
+- `ACTION`: (1) Requirement Analysis, (2) Domain Modeling, (3) Business Process Analysis, (4) Task Breakdown, (5) Change Impact Analysis, (6) Deep Audit, (7) Decision Making (Trade-offs), (8) Validation, (9) Self-Review, (10) Lesson Learned.
 
-**[K02] System Thinking & Auto-Prompting (Tư Duy Hệ Thống - "Nói ít hiểu nhiều")**
+**[K02] System Thinking & Auto-Prompting**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
 - `THUMB_RULE`: Không làm bừa khi chưa rõ Context.
@@ -44,80 +34,50 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 
 **[K03] Khung Quản lý Đối tượng (CRM Domain)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Phân định rạch ròi các đối tượng cốt lõi.
-- `TRIGGER`: Phân tích nghiệp vụ CRM.
-- `ACTION`:
-  - Hiểu rõ sự khác biệt giữa **Lead** (Tiềm năng chưa định danh), **Contact** (Người liên hệ), **Account** (Khách hàng doanh nghiệp), **Opportunity** (Cơ hội bán hàng).
-  - Đưa mọi Opportunity vào một **Sales Pipeline** cụ thể.
+- `ACTION`: Phân định rạch ròi **Lead** (Tiềm năng), **Contact** (Người liên hệ), **Account** (Công ty), **Opportunity** (Cơ hội). Opportunity phải gắn vào **Sales Pipeline**.
 
 **[K04] Quy trình và Hành trình Khách hàng (CRM Operations)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Không thiết kế luồng cụt.
-- `TRIGGER`: Code các chức năng liên quan đến chăm sóc khách hàng.
-- `ACTION`:
-  - Luôn tính đến **Lead Assignment** (Chia số tự động).
-  - Có các quy tắc **Follow-up** (Chăm sóc) rõ ràng.
-  - Vẽ **Customer Journey** (Từ lúc là Lead đến khi thành Khách hàng trung thành).
-  - Hiểu luồng vòng đời: **Quote → Order → Invoice**.
+- `ACTION`: Luôn tính đến **Lead Assignment** (Chia số), **Follow-up** (Chăm sóc). Vẽ **Customer Journey** (Quote → Order → Invoice).
 
 **[K05] Tự động hóa và Cảnh báo (CRM Automation & SLA)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: B2B CRM phải có cảnh báo tự động.
-- `TRIGGER`: Thiết kế Job, Nhắc nhở.
-- `ACTION`: Cấu hình **SLA** (Thời gian cam kết phản hồi). Nếu trễ phải có **Escalation** (Leo thang cảnh báo lên Quản lý) thông qua **Auto Workflow**.
+- `ACTION`: Cấu hình **SLA** (Thời gian cam kết). Nếu trễ phải có **Escalation** thông qua **Auto Workflow**.
 
 **[K06] Đo lường và Báo cáo (CRM KPI & Reporting)**
 - `[SEVERITY]`: 🟡 High
-- `[SPRINT]`: All
-- `THUMB_RULE`: Dữ liệu sinh ra là để đo lường.
-- `TRIGGER`: Thiết kế Database, cập nhật Status.
-- `ACTION`: Lưu giữ vết thay đổi để tính được **Conversion Rate** (Tỷ lệ chuyển đổi), **Win Rate** (Tỷ lệ thắng), **Revenue Forecast** (Dự báo doanh thu). Thiết kế bảng lịch sử để phục vụ **Funnel Report** và **Retention Report**.
+- `ACTION`: Lưu vết để tính **Conversion Rate**, **Win Rate**, **Revenue Forecast**. Phục vụ **Funnel Report** và **Retention Report**.
 
 ---
 
-## PILLAR 3: [ENTERPRISE_STANDARDS] - CHUẨN KIẾN TRÚC, BẢO MẬT & HIỆU NĂNG
+## PILLAR 3: [ENTERPRISE_BACKEND_&_SECURITY] - CHUẨN KIẾN TRÚC & BẢO MẬT
 
-**[K07] Phân Quyền Sở Hữu & Lưu Vết (Data Ownership & Audit Trail)**
+**[K07] Phân Quyền Sở Hữu & Concurrency (Data Integrity)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Không thiết kế entity vô chủ.
-- `TRIGGER`: Cấu trúc Database.
 - `ACTION`:
-  - Mọi thực thể kinh doanh (Lead, Account, Quote) PHẢI có `OwnerId` và `TeamId`. Phân quyền đệ quy theo cấp bậc phòng ban.
-  - Bắt buộc có **Entity Audit Trail** (Lịch sử thay đổi: Ai đổi, đổi từ gì sang gì, khi nào).
+  - Mọi thực thể kinh doanh PHẢI có `OwnerId` và `TeamId`. Phân quyền đệ quy. Bắt buộc có **Entity Audit Trail**.
+  - Update quan trọng phải dùng `row_version` (xmin) làm Concurrency Token chặn ghi đè.
 
-**[K08] CQRS Strict Boundaries & Async Jobs**
+**[K08] CQRS, Async Jobs & Caching**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Phân tách rạch ròi nhiệm vụ trong CQRS. Không block UI bằng tác vụ ngoài.
-- `TRIGGER`: Code API, Handlers, Tích hợp bên thứ 3.
 - `ACTION`:
-  - Controllers/Pages chỉ gửi Command/Query.
-  - Repositories CHỈ dùng cho CRUD.
-  - Toàn bộ Business Logic phải nằm trong Handlers.
-  - Gửi Email, Đồng bộ dữ liệu (KiotViet) PHẢI dùng **Outbox Pattern / Background Jobs (Hangfire)**. Không chạy đồng bộ.
+  - Controllers/Pages chỉ gửi Command/Query. Repositories CHỈ dùng CRUD. Business Logic ở Handlers.
+  - Gọi KiotViet/Email PHẢI dùng **Outbox Pattern / Hangfire**.
+  - Dashboard dùng **Hangfire Snapshot**. Data tĩnh dùng `IMemoryCache` (Có TTL và Invalidate).
 
-**[K09] Ngăn chặn Lỗ hổng Bảo mật (IDOR & XSS)**
+**[K09] Bảo Mật, Lỗi & Logging (Security & Observability)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: 1
-- `THUMB_RULE`: Không bao giờ tin tưởng Input và ID từ Client.
-- `TRIGGER`: Truy vấn dữ liệu theo ID, hiển thị Text.
 - `ACTION`:
-  - Ngừa **IDOR**: Luôn check `OwnerId` hoặc quyền trong Handlers trước khi `GetById(id)` hoặc `Update(id)`.
-  - Ngừa **XSS**: Dùng Sanitizer lọc mã độc trước khi render HTML từ Note/Email của người dùng trong Blazor.
+  - **IDOR**: Luôn check `OwnerId` trong Handler trước khi `GetById/Update`.
+  - **XSS**: Sanitizer lọc mã độc khi render Note/Email trong Blazor.
+  - **Logging**: Dùng **Serilog** (JSON). Pipeline phải sinh **Correlation ID**. Global Exception Handler không để rò rỉ lỗi.
 
-**[K10] Tối ưu Hiệu năng EF Core & UI (Performance & Cartesian Explosion)**
+**[K10] Tối ưu Hiệu năng EF Core & UI (Performance)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Tránh làm nổ RAM Server.
-- `TRIGGER`: Query DB nhiều bảng, render UI danh sách.
 - `ACTION`:
-  - Truy vấn đọc có >= 2 `Include` bắt buộc dùng `.AsSplitQuery()`.
-  - Danh sách thả xuống > 100 dòng bắt buộc dùng `<MudAutocomplete>` hoặc `<Virtualize>` thay vì `<MudSelect>` thường.
-  - Dùng **Global Query Filter** cho Soft Delete. Không dùng N+1 Query.
+  - Truy vấn >= 2 `Include` bắt buộc dùng `.AsSplitQuery()`.
+  - Không N+1. Dùng Global Query Filter cho Soft Delete.
+  - UI Danh sách > 100 dòng bắt buộc dùng `<MudAutocomplete>` hoặc `<Virtualize>`.
 
 ---
 
@@ -125,112 +85,84 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 
 **[K11] Git Workflow & Tech Debt**
 - `[SEVERITY]`: 🟡 High
-- `[SPRINT]`: All
-- `THUMB_RULE`: Rõ ràng tiến trình, không để rác vào repo.
-- `TRIGGER`: Mọi thao tác git.
-- `ACTION`: Tự động branching chuẩn (`feature/`, `bugfix/`). Dùng Conventional Commits. Cuối task tự ghi nhận Tech Debt vào `docs/sprints/...`.
+- `ACTION`: Tự động branching (`feature/`, `bugfix/`). Dùng Conventional Commits. Cuối task tự ghi nhận Tech Debt vào `docs/sprints/`.
 
 **[K12] SQL Version Control (Không Migration)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Dự án áp dụng DB First, KHÔNG dùng EF Migrations. Cấm chạy script loạn xạ.
-- `TRIGGER`: Cập nhật cấu trúc Database.
-- `ACTION`: Tạo script SQL cập nhật và **đánh số version** (VD: `V1.0.1__Create_Lead_Table.sql`). Chạy script xong mới dùng EF Core Scaffold.
+- `ACTION`: Áp dụng DB First, KHÔNG dùng EF Migrations. Cập nhật bằng file SQL đánh số version (VD: `V1.0.1__Create.sql`) trước khi EF Scaffold.
 
 **[K13] Clean Docs & Schema-Spec Sync (Nói ít làm nhiều)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Tài liệu không được mâu thuẫn với Code/Schema. README luôn < 1 trang.
-- `TRIGGER`: Cập nhật DB, thay đổi luồng.
-- `ACTION`:
-  - Luôn đối chiếu DDL SQL với Data Dictionary. Nếu lệch, cập nhật Docs.
-  - Áp dụng Append-only cho tài liệu (chỉ thêm mới, không đè trừ khi refactor).
-  - Cô lập tài liệu cũ vào `docs/archive/`. Cắt nhỏ README nếu quá dài.
+- `ACTION`: Đối chiếu DDL SQL với Data Dictionary. Áp dụng Append-only cho tài liệu (cô lập file cũ). Cắt nhỏ README < 1 trang.
 
 ---
 
-## PILLAR 5: [EXECUTION_&_RUNBOOK] - QUY CHUẨN THỰC THI & GIAO DIỆN
+## PILLAR 5: [EXECUTION_&_UI_STANDARDS] - THỰC THI & GIAO DIỆN
 
-**[K14] Step-by-Step Runbook & Real Outputs**
+**[K14] Runbook, Real Outputs & Deviation**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Runbook phải dùng được ngay, có bằng chứng.
-- `TRIGGER`: Sinh tài liệu hướng dẫn/Runbook.
 - `ACTION`:
-  - Phải có bảng Mục tiêu & Xác nhận.
-  - Theo trình tự Setup -> Execution -> Verification -> Rollback.
-  - Chèn Output THỰC TẾ (Real Output) sau khi chạy thử, không viết output kỳ vọng suông.
-  - Cung cấp sẵn Troubleshooting Matrix.
-  - RCA (Root Cause Analysis) 4 bước cho mọi lỗi.
+  - Runbook có Bảng Mục tiêu. Chèn Output THỰC TẾ. RCA 4 bước.
+  - Bắt buộc có cảnh báo **[DEVIATION]** (Nếu làm sai thì sinh lỗi gì) tại các bước quan trọng.
 
-**[K15] Centralized UI Styling (MudBlazor)**
+**[K15] UI Styling, 4 States & Localization (MudBlazor)**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Cấm Inline Style tĩnh.
-- `TRIGGER`: Thiết kế UI `.razor`.
 - `ACTION`:
-  - Khai báo Theme trong `CrmTheme.cs`. Tôn trọng Dark/Light mode của OS.
-  - Chỉ dùng MudBlazor Utility Classes (Utility-First).
-  - Khi cần override CSS, dùng Root HTML Wrapper và `::deep`. Không dùng `style="..."` trừ phi là biến động.
-  - Phân định rõ UX của Sales (Mobile-first, thao tác nhanh) vs UX của CSKH (Desktop, nhiều thông tin).
+  - Khai báo Theme tập trung. Cấm Inline Style tĩnh, dùng Utility-first và `::deep`.
+  - Mọi màn hình phải có 4 states: Loading, Empty, Error, Success.
+  - Bản địa hóa chuẩn VN (Tiền tệ VNĐ, ngày `dd/MM/yyyy`). UX tách biệt Mobile (Sales) và Desktop (CSKH).
 
 **[K16] Secret Management & Environment Consistency**
 - `[SEVERITY]`: 🔴 Critical
-- `[SPRINT]`: All
-- `THUMB_RULE`: Bảo mật và Idempotency (Khả lặp).
-- `TRIGGER`: Script cấu hình, psql.
 - `ACTION`:
-  - Không nhét password vào source code (dùng Secret/Env variables).
-  - `psql` luôn dùng `-P pager=off` và `PGCLIENTENCODING=UTF8`.
-  - Mọi script phải có `-Force`, `IF NOT EXISTS` để có thể chạy nhiều lần không lỗi.
-  - Giữ nguyên tắc giờ hệ thống: DB `UTC`, Code `UtcNow`, UI convert `GMT+7`.
+  - Không commit password (dùng User Secrets/Env).
+  - Lệnh `psql` luôn có `-P pager=off`, UTF8. Giờ hệ thống: DB `UTC`, Code `UtcNow`, UI `GMT+7`.
 
-**[K17] Clean Test Artifacts & Sandbox Experimentation**
-- `[SEVERITY]`: 🟡 High
-- `[SPRINT]`: All
-- `THUMB_RULE`: Không đoán lỗi, không để lại rác.
-- `TRIGGER`: Debug lỗi, thử nghiệm Kỹ thuật mới.
-- `ACTION`: Tự sinh file test nhỏ để chạy thực tế -> Dọn sạch file test, log, thư viện tạm sau khi xong.
+---
+
+## PILLAR 6: [DEVOPS_&_TESTING_OPS] - VẬN HÀNH & KIỂM THỬ
+
+**[K17] Testing Strategy (Pyramid 70/20/10)**
+- `[SEVERITY]`: 🔴 Critical
+- `ACTION`:
+  - Ưu tiên Unit Test (70%). Integration Test (20%) phải dùng **TestContainers** (Database tạm cách ly). E2E (10%).
+  - Bắt buộc mock các service ngoài (Moq KiotViet).
+  - Sandbox test xong phải xóa rác (Clean Artifacts).
+
+**[K18] Deploy, Backup & Health (Zero-Downtime)**
+- `[SEVERITY]`: 🔴 Critical
+- `ACTION`:
+  - Phải có Rollback Plan (Git tag, DB restore) cho mọi deploy.
+  - Setup Backup Database định kỳ (pg_dump ban đêm).
+  - Triển khai Zero-Downtime (Graceful reload, migrate trước code sau).
+  - Setup `/health` check và Monitor cảnh báo (CPU > 80%, RAM > 90%).
 
 ---
 
 ## APPENDIX: EXECUTION TEMPLATES (BIỂU MẪU THỰC THI BẮT BUỘC)
 
-Để đảm bảo khả năng thực thi (Execution) chính xác 100%, mọi Agent phải sử dụng các biểu mẫu sau khi sinh tài liệu/code:
-
 ### 1. Form Dual-Layer Runbook (Chuẩn K14)
-Mỗi Phase trong Runbook bắt buộc tuân theo cấu trúc:
 ```markdown
 ### Phase 1: [Tên Phase] (Time budget: X phút)
-
 **[EXEC] - Thực thi:**
-1. Chạy lệnh:
-   ` ` `bash
-   <lệnh>
-   ` ` `
-2. Output thực tế (Real Output):
-   ` ` `text
-   <copy output thật vào đây>
-   ` ` `
+1. Chạy lệnh: `bash ...`
+2. Output thực tế: `text ...`
 
 **[DEVIATION] - Xử lý sự cố:**
-- Lỗi: <Tên lỗi>
-- Fix: <Lệnh khắc phục>
+- Lỗi: <Tên lỗi> -> Fix: <Lệnh khắc phục>
 
 **[LEARN] - Khái niệm:**
-- Tại sao phải làm bước này: <giải thích ngắn gọn>
-
+- Tại sao phải làm bước này: <giải thích>
 **[CONCEPT] - Xác nhận:**
 - [ ] Đã hiểu khái niệm X.
 ```
 
 ### 2. Form Root Cause Analysis (RCA chuẩn K14)
-Khi báo cáo lỗi/Tech Debt, phải điền đủ 4 mục:
 ```markdown
-- **Symptom (Triệu chứng):** Hệ thống văng lỗi X khi bấm nút Y.
-- **Root Cause (Nguyên nhân):** Do query thiếu .AsSplitQuery() làm tràn RAM.
-- **Solution (Giải pháp):** Đổi thành .AsSplitQuery() trong Handler.
-- **Verification (Nghiệm thu):** Lệnh test `dotnet test` trả về Passed.
+- **Symptom:** Hệ thống văng lỗi X khi...
+- **Root Cause:** Do thiếu .AsSplitQuery()...
+- **Solution:** Đổi thành .AsSplitQuery()...
+- **Verification:** `dotnet test` trả về Passed.
 ```
 
 ### 3. Form PowerShell/psql chuẩn (Chuẩn K16)
