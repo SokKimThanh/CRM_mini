@@ -9,14 +9,14 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 
 | Miền Chuyên Môn (Domain) | Phạm Vi Nhiệm Vụ & Trách Nhiệm | Dải Mã Kỹ Năng | Số Lượng |
 | :--- | :--- | :--- | :--- |
-| **DOMAIN 1: AGENT GOVERNANCE & PROTOCOLS** | Chuỗi điều phối, 10 bước tư duy kỹ sư, giao tiếp súc tích, nợ kỹ thuật & Git | `[K01]` – `[K11]` | 11 |
+| **DOMAIN 1: AGENT GOVERNANCE & PROTOCOLS** | Chuỗi điều phối, 10 bước tư duy kỹ sư, giao tiếp súc tích, nợ kỹ thuật, Git & Chốt chặn điểm dừng | `[K01]` – `[K11]`, `[K78]` | 12 |
 | **DOMAIN 2: BACKEND & DATABASE EXCELLENCE** | CQRS Handlers, DB-First DDL, SQL Versioning, Outbox Pattern, Split Query, EF Core & Cache | `[K12]` – `[K25]` | 14 |
 | **DOMAIN 3: FRONTEND & DESIGN SYSTEM** | Blazor Container/Presentation, Virtualize & Autocomplete, MudBlazor Token, 4 Trạng thái, Scoped CSS | `[K26]` – `[K35]` | 10 |
 | **DOMAIN 4: SECURITY & OBSERVABILITY** | Secret, OWASP, Defense-in-Depth IDOR & Data Ownership, Serilog JSON, Correlation ID & APM | `[K36]` – `[K44]` | 9 |
 | **DOMAIN 5: QA, ENVIRONMENT & DEVOPS** | Tháp kiểm thử, DoD, Pre-commit, Rollback, Idempotent Scripts, Sao lưu & Zero-downtime | `[K45]` – `[K57]` | 13 |
 | **DOMAIN 6: RUNBOOK & META-LEARNING** | Phân tầng Runbook, RCA sự cố, Two-Pass, Khám phá hộp cát & Dọn rác hiện trường | `[K58]` – `[K73]` | 16 |
 | **DOMAIN 7: B2B CRM BUSINESS LOGIC** | Phân định thực thể CRM, Phễu bán hàng B2B, SLA Escalation Workflow & Báo cáo Funnel | `[K74]` – `[K77]` | 4 |
-| **TỔNG CỘNG** | **Toàn bộ hệ thống kỹ năng chuẩn hóa duy nhất** | **`[K01]` – `[K77]`** | **77** |
+| **TỔNG CỘNG** | **Toàn bộ hệ thống kỹ năng chuẩn hóa duy nhất** | **`[K01]` – `[K78]`** | **78** |
 
 ---
 
@@ -28,7 +28,7 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 - `THUMB_RULE`: Không thực hiện tác vụ đơn lẻ, tùy tiện. Mọi task thực thi mã nguồn phải tuân theo chuỗi hành động khép kín (Deterministic Execution Chain).
 - `TRIGGER`: Nhận yêu cầu tạo tính năng (Feature), sửa lỗi (Bug fix) hoặc tái cấu trúc (Refactor) sau khi đã qua chốt chặn ngữ cảnh ([K02], [K03]).
 - `ACTION`:
-  1. Neo ngữ cảnh và chạy 10 bước tư duy tiền khả thi ([K02], [K03]).
+  1. Neo ngữ cảnh, kiểm soát trần phản biện lý thuyết ([K78]) và chạy 10 bước tư duy tiền khả thi ([K02], [K03]).
   2. Phân rã bài toán thành các phiên thực thi nhỏ $< 30$ phút ([K04]).
   3. Lập trình tuân thủ tuyệt đối quy chuẩn backend/frontend ([K12], [K14], [K18], [K26], [K33]).
   4. Nếu thao tác thực thể CRM, đối chiếu với mô hình phễu và vòng đời đối tượng ([K74] – [K77]).
@@ -60,7 +60,7 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   6. **Deep Audit**: Rà soát lỗ hổng tiềm ẩn về hiệu năng, bảo mật và toàn vẹn dữ liệu.
   7. **Decision Making & Trade-off**: Cân nhắc các phương án kỹ thuật và giải thích lý do lựa chọn phương án tối ưu.
   8. **Validation & Verification**: Xác định trước các điều kiện nghiệm thu định lượng ([K51], [K63]).
-  9. **Self-Review**: Tự kiểm tra chéo (Cross-check) mã và logic trước khi trình bày.
+  9. **Self-Review**: Tự kiểm tra chéo (Cross-check) mã và logic trước khi trình bày; tuân thủ nghiêm ngặt điểm dừng phản biện ([K78]).
   10. **Lesson Learned**: Đúc kết và ghi nhận bài học sau khi hoàn thành.
 
 **[K04] Auto-Prompting (Phân rã Phiên làm việc Độc lập)**
@@ -133,6 +133,20 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   1. **Tech Stack & Runtime Manifest**: Phiên bản chuẩn (.NET 10, Blazor Server/WASM, PostgreSQL, Hangfire).
   2. **Cây Thư Mục Cấp 1 & Vai Trò**: Mỗi thư mục gốc đi kèm 1 dòng mô tả ngắn gọn trách nhiệm nghiệp vụ.
   3. **Mục Lục Chỉ Mục Nóng (Hot-Links)**: Trỏ trực tiếp đến 3 tài liệu sống: `docs/specs/data_dictionary.md`, `docs/specs/api_contracts.md`, và Sprint Runbook hiện hành.
+
+**[K78] Finite Deliberation & Exit Criteria Enforcement (Chốt Chặn Điểm Dừng & Thoát Vòng Lặp Phản Biện)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Triệt tiêu hội chứng tê liệt phân tích (Analysis Paralysis). Mọi phiên đánh giá lý thuyết chỉ được tối đa 2 vòng phản biện ($N \le 2$). Thoát ngay sang thực thi khi không còn lỗi kiến trúc; cấm dùng kỹ năng này để bỏ qua cổng nghiệm thu DoD.
+- `TRIGGER`: Khi phiên làm việc rơi vào một trong các trạng thái:
+  1. Quá trình tự đánh giá/phản biện lý thuyết chạm ngưỡng vòng thứ 2 ($N_{\text{review\_pass}} \ge 2$).
+  2. Hai lượt trao đổi không làm thay đổi kết luận kỹ thuật ở mức độ 🔴 Critical hoặc 🟡 High.
+  3. Các nhận xét còn lại chỉ thuần túy là sở thích hành văn hoặc phong cách thẩm mỹ không ảnh hưởng đến tính toàn vẹn của hệ thống.
+- `ACTION`:
+  1. **Khóa Luận Đàm (Freeze Deliberation)**: Ngừng việc đào sâu giả thuyết. Tóm tắt kết luận cuối cùng trong $\le 3$ gạch đầu dòng ngắn gọn.
+  2. **Trọng Tài Con Người (Human Fallback)**: Nếu chạm trần 2 vòng phản biện mà vẫn còn 2 phương án kỹ thuật mâu thuẫn, xuất bảng đối chiếu ưu/nhược điểm trong tối đa 5 dòng và nhường quyền quyết định cho người dùng.
+  3. **Cưỡng Bức Thực Thi (Forced Execution)**: Chuyển ngay sang viết mã, chạy script CLI thật ([K61]) hoặc kiểm thử hộp cát ([K72]) để lấy dữ liệu thực nghiệm.
+  4. **Bảo Toàn Cổng Chất Lượng**: Tuyệt đối không viện dẫn Exit Criteria để bỏ qua các tiêu chuẩn kiểm thử [K45], [K48], [K63]. Mọi mã sinh ra vẫn phải build xanh và vượt qua toàn bộ pre-commit checklist.
 
 ---
 
@@ -708,7 +722,7 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 - `TRIGGER`: Khi biên soạn các bước kỹ thuật trong Runbook.
 - `ACTION`: Bổ sung khối cảnh báo ngay dưới bước thao tác:
   ```markdown
-  > ⚠️️ [LỆCH CHUẨN DỰ KIẾN]: Nếu thao tác sai ở bước này, hệ thống sẽ báo lỗi `CS0104`.
+  > ⚠ [LỆCH CHUẨN DỰ KIẾN]: Nếu thao tác sai ở bước này, hệ thống sẽ báo lỗi `CS0104`.
   > - Nguyên nhân: Trùng lặp namespace.
   > - Khắc phục nhanh: Thêm tiền tố định danh rõ ràng.
   ```
