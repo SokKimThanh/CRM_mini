@@ -117,7 +117,19 @@ Mọi hành động sinh code, chat, tạo nhánh phải tuân thủ nghiêm ng�
 
 ---
 
-## BLOCK 5: [TECH_STACK_MASTERY] - LUẬT LẬP TRÌNH CHUYÊN SÂU (.NET 8)
+**[K71] Schema-Spec Verification (Đồng bộ CSDL và Đặc tả)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không bao giờ để tài liệu đặc tả (Data Dictionary/SRS) lệch pha với code thực tế (Schema DDL).
+- `TRIGGER`: Khi có bất kỳ thay đổi nào về cấu trúc cơ sở dữ liệu (tạo bảng mới, thêm/sửa cột, đổi kiểu dữ liệu).
+- `ACTION`:
+  1. Tự động tìm kiếm file đặc tả liên quan (ví dụ: `B2B_CRM_Technical_Specification.md`, Use Cases).
+  2. Đối chiếu trực tiếp cấu trúc DDL SQL thực tế với từ điển dữ liệu (Data Dictionary).
+  3. Nếu phát hiện sai lệch, lập tức cập nhật lại file đặc tả hoặc đưa ra cảnh báo để đảm bảo tính nhất quán tuyệt đối giữa "Code/Schema" và "Tài liệu".
+
+
+## BLOCK 5: [TECH_STACK_MASTERY] - LUẬT LẬP TRÌNH CHUYÊN SÂU (.NET 10)
+
 
 **[K10] Backend & Code Convention**
 - `[SEVERITY]`: 🟡 High
