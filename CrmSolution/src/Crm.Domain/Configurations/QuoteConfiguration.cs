@@ -26,14 +26,17 @@ public class QuoteConfiguration : IEntityTypeConfiguration<Quote>
             entity.Property(e => e.VatRate).HasDefaultValue(10m);
 
             entity.HasOne(d => d.Contact).WithMany(p => p.Quotes)
+                .HasForeignKey(d => d.ContactId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Quotes)
+                .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.Restrict)
                 ;
 
             entity.HasOne(d => d.Opportunity).WithMany(p => p.Quotes)
+                .HasForeignKey(d => d.OpportunityId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
         

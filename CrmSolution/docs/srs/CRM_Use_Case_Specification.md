@@ -129,7 +129,7 @@
   1. Người dùng chọn mục "Khách hàng" trên Sidebar (`/Customers/Index`).
   2. Hệ thống tải dữ liệu: Bảng danh sách gồm Mã KH, Tên doanh nghiệp, Sức khỏe (Badge màu), Sales phụ trách, Ngày đặt đơn cuối, Doanh số 90 ngày.
   3. Người dùng thực hiện lọc dữ liệu theo Sức khỏe (Healthy/Fair/AtRisk/Dormant/New) hoặc gõ từ khóa tìm kiếm (Tên/SĐT/MST).
-  4. HTMX gửi request debounce 300ms và tải lại phần thân bảng không làm giật trang.
+  4. Blazor gửi event debounce 300ms và tải lại phần thân bảng không làm giật trang.
 * **Business Rules:**
   * **Sales:** Mặc định chỉ nhìn thấy các khách hàng được gán cho chính mình (`assigned_to_user_id = current_user`).
   * **Manager / Accountant / Admin:** Xem toàn bộ khách hàng của công ty.
@@ -221,10 +221,10 @@
 * **Main Flow:**
   1. Người dùng mở Tab 2 "Người liên hệ" tại hồ sơ khách hàng.
   2. Bấm nút "[ + Thêm Người Liên Hệ ]".
-  3. Modal HTMX bật lên: Nhập Họ tên (*), Chức vụ/Phòng ban, Số điện thoại (*), Email, Tùy chọn "[ ] Là đầu mối chính".
+  3. MudDialog (Modal) bật lên: Nhập Họ tên (*), Chức vụ/Phòng ban, Số điện thoại (*), Email, Tùy chọn "[ ] Là đầu mối chính".
   4. Người dùng bấm "Lưu".
   5. Hệ thống ghi dữ liệu vào bảng `contacts`. Nếu người dùng đánh dấu là đầu mối chính, hệ thống tự động gỡ cờ chính của các liên hệ cũ thuộc khách hàng đó.
-  6. HTMX tải lại danh sách liên hệ ngay tại Tab 2.
+  6. Blazor render lại danh sách liên hệ ngay tại Tab 2.
 * **Data touched:** `contacts`, `audit_logs`
 
 #### UC-18: Ghi nhận lịch sử tương tác (Interactions)
@@ -232,7 +232,7 @@
 * **Postcondition:** Bản ghi tương tác được lưu, tự động cập nhật ngày liên hệ gần nhất của khách hàng.
 * **Main Flow:**
   1. Tại Tab 4 của hồ sơ khách hàng, người dùng bấm "[ + Ghi Nhận Tương Tác ]".
-  2. Modal HTMX hiển thị các trường: Hình thức (Gọi điện / Gặp trực tiếp / Email / Zalo), Thời lượng (phút), Đầu mối tiếp nhận, Nội dung trao đổi (*).
+  2. MudDialog (Modal) hiển thị các trường: Hình thức (Gọi điện / Gặp trực tiếp / Email / Zalo), Thời lượng (phút), Đầu mối tiếp nhận, Nội dung trao đổi (*).
   3. Người dùng nhập nội dung và bấm "Lưu tương tác".
   4. Hệ thống ghi nhận vào bảng `interactions`.
   5. Cập nhật trường `last_contact_date = NOW()` tại bảng `customers`.
@@ -289,7 +289,7 @@
 * **Main Flow:**
   1. Người dùng bấm nút "[ + Tạo Cơ Hội ]".
   2. Màn hình `/Opportunities/Create` hiển thị:
-     * Ô tìm kiếm khách hàng: Gõ tên/SĐT $\rightarrow$ HTMX gợi ý danh sách khách hàng ngay bên dưới.
+     * Ô tìm kiếm khách hàng: Gõ tên/SĐT $\rightarrow$ Blazor gợi ý danh sách khách hàng ngay bên dưới.
      * Chọn khách hàng $\rightarrow$ Dropdown "Người liên hệ" tự động load các contact tương ứng.
      * Tiêu đề cơ hội (*), Giá trị dự kiến (VNĐ), Xác suất thành công (%), Ngày dự kiến chốt đơn.
   3. Người dùng bấm "Lưu cơ hội".
@@ -382,7 +382,7 @@
      * Điều khoản thanh toán (Chuyển khoản 100%, Trả chậm 30 ngày,...).
   3. Bảng sản phẩm động:
      * Người dùng bấm "[ + Thêm dòng sản phẩm ]".
-     * Gõ tên hoặc mã vật tư $\rightarrow$ HTMX tìm kiếm hiển thị mã SKU và giá niêm yết.
+     * Gõ tên hoặc mã vật tư $\rightarrow$ Blazor tìm kiếm hiển thị mã SKU và giá niêm yết.
      * Nhập Số lượng, Đơn giá, Chiết khấu dòng (%).
   4. Client JavaScript tự động tính toán thời gian thực: Thành tiền từng dòng, Tiền hàng trước thuế, Thuế VAT ($8\%$ hoặc $10\%$), Tổng thanh toán.
   5. Người dùng bấm "Lưu Nháp" hoặc "Hoàn tất".
@@ -493,7 +493,7 @@
   3. Người dùng nhập dữ liệu và bấm "Lưu công việc".
   4. Hệ thống validate: Hạn hoàn thành phải từ thời điểm hiện tại trở đi.
   5. Lưu vào bảng `sales_tasks`.
-  6. HTMX tự động nạp nhiệm vụ mới vào bảng danh sách tương ứng.
+  6. Blazor tự động nạp nhiệm vụ mới vào bảng danh sách tương ứng.
 * **Data touched:** `sales_tasks`, `audit_logs`
 
 #### UC-42: Đóng nhiệm vụ & Kích hoạt máy trạng thái Outcome
@@ -501,7 +501,7 @@
 * **Postcondition:** Nhiệm vụ đóng trạng thái `Completed`, hệ thống tự động sinh việc hoặc cơ hội tiếp theo theo ma trận quy tắc.
 * **Main Flow:**
   1. Người dùng bấm nút "[ Ghi Kết Quả ]" trên dòng công việc cần đóng.
-  2. Modal HTMX hiển thị các trường: Hình thức tiếp xúc, Người liên hệ tiếp nhận, Nhóm kết quả đạt được (Dropdown 8 Outcome), Ghi chú trao đổi chi tiết (*).
+  2. MudDialog (Modal) hiển thị các trường: Hình thức tiếp xúc, Người liên hệ tiếp nhận, Nhóm kết quả đạt được (Dropdown 8 Outcome), Ghi chú trao đổi chi tiết (*).
   3. Người dùng chọn 1 trong 8 Outcome:
      * **Outcome 1 (Khách đồng ý mua / Có nhu cầu mới):** Hệ thống tự động tạo một Cơ hội mới (`OPP-XXXX`) ở giai đoạn ban đầu và mở màn hình tạo cơ hội.
      * **Outcome 2 (Khách cần báo giá):** Tự động tạo một Cơ hội kèm theo một Task mới: "Lập và gửi báo giá" có hạn xử lý trong vòng 24 giờ.
@@ -590,7 +590,7 @@
 * **Postcondition:** Toàn bộ biểu đồ và chỉ số KPI tự động nạp lại tương ứng theo khoảng thời gian được chọn.
 * **Main Flow:**
   1. Người dùng bấm vào dropdown bộ lọc thời gian: Tháng này / Tháng trước / Quý này / 6 tháng gần nhất / Tùy chọn ngày.
-  2. HTMX gửi request lấy nội dung thống kê tương ứng.
+  2. Blazor component gọi Handler lấy nội dung thống kê tương ứng.
   3. Client cập nhật dữ liệu vào các đối tượng Chart.js thông qua phương thức `chart.update()`.
 * **Data touched:** `dashboard_snapshots`
 

@@ -213,3 +213,50 @@
 * Thiết lập bộ Unit Tests kiểm thử toàn bộ luồng nghiệp vụ của `CustomerService`.
 
 * Xây dựng màn hình danh sách khách hàng (`/customers`) sử dụng `MudTable` hỗ trợ phân trang, tìm kiếm thời gian thực và lọc trạng thái sức khỏe (`CustomerHealth`).
+# Daily Log — Day 6 / Sprint 1: Kế hoạch Customer Repository & Service Unit Tests
+
+* **Ngày thực hiện:** Sprint 1 — Day 6 (Plan/Runbook Generation)
+* **Target Framework:** .NET 10 | xUnit | Moq
+
+## 1. Hạng mục đã hoàn tất (Done)
+- [x] Tạo file Actionable Prompts cho Day 6 tại `docs/sprints/sprint_1/prompts/day6_prompts.md`.
+- [x] Tiến hành Sandbox Experimentation (Dry-run mã C#): Xây dựng giả lập `CustomerRepository` và `CustomerService`.
+- [x] Áp dụng thư viện `MockQueryable.Moq` và `.BuildMock()` để bypass lỗi `ExecuteAsync` của EF Core trong Unit Tests.
+- [x] Đạt Passed! 100% (3/3 Tests Passed) trong môi trường thử nghiệm.
+- [x] Thu thập Real Output và biên soạn thành Runbook Markdown chuẩn Dual-Layer tại `docs/sprints/sprint_1/runbooks/Day_6_Sprint_1_Customer_Repository_Service.md`.
+- [x] Khôi phục toàn bộ mã nguồn về sạch (chỉ giữ lại file Runbook và Prompts).
+
+## 2. Số liệu kỹ thuật
+- **Tests Passed (Sandbox):** 3
+- **Runbook:** 1 file Markdown hoàn thiện.
+- **Prompts:** 3 phiên làm việc băm nhỏ.
+
+## 3. Bài học cốt lõi (Meta-Skills)
+- Củng cố kỹ năng `[K69] Self-Correction & Context Assimilation`: Tự lùng sục codebase thay vì đặt câu hỏi ngớ ngẩn với user.
+- Thấy được lỗi thực tế `IQueryable không hỗ trợ Async` khi Unit Test Service, nhờ có thói quen Sandbox Experimentation (`K70`), đã fix bằng `MockQueryable.Moq` trước khi ghi vào Runbook.
+
+## Next Steps (Phiên sau)
+- User hoặc AI sẽ sử dụng prompt đã tạo để thực sự sinh mã nguồn vào dự án cho Day 6.
+- Tiến tới Day 7: Xây dựng màn hình hiển thị danh sách Khách hàng trên MudBlazor (`Customers/Index.razor`).
+
+---
+
+## [LEARN] RCA & Đúc kết khái niệm (K51, K65, K67) - Ngày 4 (Sửa lỗi mapping EF Core)
+
+### 1. Root Cause Analysis (K51)
+- **Triệu chứng:** Cấu hình EF Core Fluent API bị thiếu mapping tường minh (`.HasForeignKey()`), có nguy cơ sinh shadow properties hoặc hiểu sai quan hệ (đặc biệt là 1-Nhiều ở `Team` và `UserProfile`). Script Scaffold cũng vô tình xóa các config gốc do Regex sai.
+- **Nguyên nhân gốc:**
+  1. Trong script `AppDbContextSetup.ps1`, một regex (`-replace '\.HasConstraintName\("[^"]+"\)', ''`) được dùng để "dọn dẹp" config tự sinh nhưng lại gây side-effect xóa luôn các thiết lập liên quan đến ràng buộc (Constraint).
+  2. Các file cấu hình viết tay như `TeamConfiguration` có `.WithMany()` bị để trống và thiếu `.HasForeignKey()` đi kèm.
+- **Giải pháp:**
+  1. Xóa lệnh regex replace sai trái trong `AppDbContextSetup.ps1`.
+  2. Sửa trực tiếp các file configuration: Cập nhật `TeamConfiguration` với `.WithMany().HasForeignKey(t => t.ManagerId)`.
+- **Xác nhận:** Đã viết file test xUnit sử dụng `Microsoft.EntityFrameworkCore.InMemory` duyệt qua metadata của EF (`context.Model.GetEntityTypes()`). Kết quả cho thấy 0 Shadow Properties và đúng chuẩn cấu hình One-To-Many/One-To-One.
+
+### 2. Concept Mastery (K65)
+- **EF Core Model Traversing (K70):** Hiểu rõ cách móc vào `context.Model` trong runtime để duyệt `GetEntityTypes()`, `GetForeignKeys()`, và kiểm tra `IsShadowProperty()`. Giúp test schema trước khi migrate/run mà không cần phụ thuộc vào console error.
+- **Quyền lực của Fluent API (K48):** Dù có attribute DataAnnotation ở model, nhưng nếu trong Fluent API có khai báo `WithMany()` lửng lơ, EF Core sẽ tạo ra mapping ảo. Bắt buộc phải tường minh 2 chiều.
+- **Hệ quả của Code Generation (K64):** Tuyệt đối cẩn trọng khi dùng Regex/Script để chỉnh sửa code tự sinh của ORM (Scaffold) vì rất dễ xóa nhầm logic quan trọng.
+
+### 3. Kỹ năng mở rộng (K71)
+- **Dọn dẹp Sandbox:** Áp dụng K71 xóa mọi rác thải sinh ra trong quá trình Sandbox (K70) sau khi debug thành công, giữ cho Codebase sạch sẽ trước khi commit.

@@ -13,7 +13,7 @@ Doanh nghiệp nhỏ bán B2B vật tư tiêu hao cho nhà máy cơ khí. Đã d
 ### 1.2 Mục tiêu SMART
 * **S (Specific):** Xây dựng hệ thống CRM quản lý khách hàng 360 độ, cơ hội theo pipeline Kanban, tự động hóa nhắc lịch chăm sóc và đồng bộ dữ liệu hai chiều với KiotViet.
 * **M (Measurable):** Phục vụ 10 người dùng nội bộ vận hành đồng thời, tỷ lệ chuyển đổi qua phễu đạt $\ge 10\%$.
-* **A (Achievable):** Triển khai theo mô hình 7 Sprints (14 tuần · 5 ngày/tuần · 2 giờ/ngày = 140 giờ chuẩn do 1 Solo Full-stack .NET Developer phụ trách).
+* **A (Achievable):** Triển khai theo mô hình 7 Sprints (14 tuần · 5 ngày/tuần · 2 giờ/ngày = 140 giờ chuẩn do 1 Solo Full-stack .NET 10 Developer phụ trách).
 * **R (Relevant):** Tăng tỷ lệ mua lặp lại, kiểm soát khách hàng có nguy cơ rời bỏ (At-Risk/Dormant), không bỏ sót đầu mối bán lẻ/sỉ.
 * **T (Time-bound):** Hoàn thành toàn bộ quy trình từ lập trình đến triển khai production và bàn giao trong 14 tuần.
 
@@ -46,10 +46,10 @@ Doanh nghiệp nhỏ bán B2B vật tư tiêu hao cho nhà máy cơ khí. Đã d
 |---|---|---|
 | **S1** | Xem danh sách khách cần chăm sóc hôm nay | Màn hình mặc định lọc tab "Hôm nay", sắp xếp theo hạn xử lý gần nhất, hiển thị rõ badge sức khỏe khách hàng. |
 | **S2** | Xem hồ sơ khách hàng 360 độ | Cung cấp 4 tabs thông tin: Thông tin chung, Danh bạ liên hệ, Cơ hội theo khách, và Dòng thời gian tương tác. |
-| **S3** | Ghi nhận tương tác sau liên hệ | Modal HTMX với 8 nhánh Outcome; tự động sinh task nhắc lại hoặc cơ hội tương ứng sau khi submit mà không reload trang. |
-| **S4** | Tạo cơ hội bán hàng mới | Tìm kiếm khách hàng qua HTMX debounce 300ms, tự động sinh mã `OPP-XXXX`, gán đúng stage ban đầu. |
-| **S5** | Kéo thả cơ hội trên Kanban | Kéo thả chuyển cột mượt mà (SortableJS), cập nhật stage và ghi lịch sử vết; tự rollback vị trí nếu mất mạng hoặc API lỗi. |
-| **S6** | Tạo báo giá nhiều mặt hàng | Bảng sản phẩm động (thêm/xóa dòng), tính toán chiết khấu, VAT và tổng tiền thời gian thực bằng JS/HTMX. |
+| **S3** | Ghi nhận tương tác sau liên hệ | MudDialog với 8 nhánh Outcome; tự động sinh task nhắc lại hoặc cơ hội tương ứng sau khi submit mà không reload trang. |
+| **S4** | Tạo cơ hội bán hàng mới | Tìm kiếm khách hàng qua Blazor data binding debounce 300ms, tự động sinh mã `OPP-XXXX`, gán đúng stage ban đầu. |
+| **S5** | Kéo thả cơ hội trên Kanban | Kéo thả chuyển cột mượt mà (MudBlazor Drag and Drop), cập nhật stage và ghi lịch sử vết; tự rollback vị trí nếu mất mạng hoặc API lỗi. |
+| **S6** | Tạo báo giá nhiều mặt hàng | Bảng sản phẩm động (thêm/xóa dòng), tính toán chiết khấu, VAT và tổng tiền thời gian thực bằng Blazor. |
 | **S7** | Xuất báo giá định dạng PDF | Render file PDF bằng QuestPDF chuẩn in ấn A4, không lỗi font Unicode tiếng Việt, định dạng tiền tệ VND chuẩn. |
 | **S8** | Gửi email báo giá tự động | Gửi qua MailKit đính kèm file PDF in-memory, dùng template HTML trang trọng, ghi log tự động vào bảng `interactions`. |
 | **S9** | Đóng task công việc hàng ngày | Modal đóng task ghi kết quả nhanh; task tự động ẩn khỏi tab "Hôm nay" và cập nhật chỉ số KPI trên header. |
@@ -197,8 +197,8 @@ Toàn bộ API tuân thủ cấu trúc phản hồi JSON thống nhất:
 | **6** | `GET` | `/api/dashboard/alerts` | Danh sách thông báo khách At-Risk khẩn | All Authenticated |
 | **7** | `POST`| `/api/opportunities/{id}/move` | Nhận lệnh kéo thả card Kanban | Sales, Manager |
 | **8** | `POST`| `/api/tasks/{id}/complete` | Đóng task & kích hoạt Outcome state | Sales, Manager |
-| **9** | `GET` | `/api/customers/search?q=` | Gợi ý tìm kiếm khách hàng nhanh (HTMX) | All Authenticated |
-| **10**| `GET` | `/api/products/search?q=` | Tra cứu sản phẩm lên báo giá (HTMX) | Sales, Manager |
+| **9** | `GET` | `/api/customers/search?q=` | Gợi ý tìm kiếm khách hàng nhanh (Blazor EventCallback) | All Authenticated |
+| **10**| `GET` | `/api/products/search?q=` | Tra cứu sản phẩm lên báo giá (Blazor EventCallback) | Sales, Manager |
 | **11**| `GET` | `/api/quotes/{id}/pdf` | Stream xuất file PDF báo giá in ấn | All Authenticated |
 | **12**| `GET` | `/api/kiotviet/stock/{productId}`| Tra cứu tồn kho thời gian thực (Cache 5p) | Sales, Manager |
 
@@ -207,7 +207,7 @@ Toàn bộ API tuân thủ cấu trúc phản hồi JSON thống nhất:
 ## 6. KẾ HOẠCH KIỂM THỬ (TEST PLAN 52 CASES)
 
 ### 6.1 Chiến lược kiểm thử
-* **Unit Test:** Kiểm thử đơn vị tập trung cho toàn bộ Service Layer của `Crm.Business` (Mục tiêu Code Coverage $> 70\%$).
+* **Unit Test:** Kiểm thử đơn vị tập trung cho toàn bộ CQRS Handlers của `Crm.Business` (Mục tiêu Code Coverage $> 70\%$).
 * **Integration Test:** Kiểm tra giao tiếp giữa EF Core và PostgreSQL, test kết nối KiotViet HttpClient mock.
 * **End-to-End Test (E2E):** Kiểm thử thủ công theo 4 kịch bản người dùng cốt lõi trên môi trường staging/production.
 * **UAT:** 10 người dùng thật chạy thử nghiệm liên tục trong 1 tuần (Sprint 7).
@@ -311,7 +311,7 @@ main             <--- Nhánh Production chính thức, chỉ merge khi nghiệm 
 | 1 | **HTTPS Toàn diện** | Kích hoạt chứng chỉ Let's Encrypt SSL, chuyển hướng 100% HTTP $\rightarrow$ HTTPS | [x] |
 | 2 | **HTTP Strict Transport Security** | Cấu hình HSTS Header với thời hạn `max-age=31536000` | [x] |
 | 3 | **Chống tấn công CSRF** | Bật xác thực Anti-Forgery Token cho toàn bộ các request POST/PUT/DELETE | [x] |
-| 4 | **Giới hạn lưu lượng (Rate Limiting)** | Middleware .NET 8 giới hạn tối đa 60 requests/phút/IP để chống spam | [x] |
+| 4 | **Giới hạn lưu lượng (Rate Limiting)** | Middleware .NET 10 giới hạn tối đa 60 requests/phút/IP để chống spam | [x] |
 | 5 | **Chống tấn công SQL Injection** | Sử dụng 100% Parameterized Queries thông qua Entity Framework Core 8 | [x] |
 | 6 | **Mã hóa mật khẩu an toàn** | ASP.NET Core Identity tích hợp thuật toán băm PBKDF2 / BCrypt | [x] |
 | 7 | **Bảo vệ phiên làm việc** | Cookie Authentication với cờ `HttpOnly`, `SameSite=Lax`, thời hạn 8 tiếng | [x] |
@@ -385,7 +385,7 @@ Tài liệu này là mảnh ghép hoàn chỉnh đồng hành cùng **Tài liệ
 Quy ước chung bố cục màn hình:
 * **Sidebar trái (Cố định):** Logo hệ thống, Khách hàng 360, Cơ hội bán hàng, Báo giá thương mại, Kế hoạch công việc, Báo cáo điều hành, Cài đặt hệ thống.
 * **Header trên:** Thanh tìm kiếm đa năng (Mã KH, SĐT, MST, Tên deal), Chuông thông báo việc khẩn, Thông tin người dùng và Đăng xuất.
-* **Khu vực làm việc chính:** Tải nội dung động thông qua HTMX, giữ nguyên trải nghiệm mượt mà không nhấp nháy màn hình.
+* **Khu vực làm việc chính:** Tải nội dung động thông qua Blazor Server, giữ nguyên trải nghiệm mượt mà không reload trang toàn bộ.
 
 ---
 
@@ -588,7 +588,7 @@ Quy ước chung bố cục màn hình:
 
 ---
 
-### 15.9 Màn hình 9: Modal Đóng Task & Ghi nhận Tương tác (`HTMX Modal Trigger`)
+### 15.9 Màn hình 9: Modal Đóng Task & Ghi nhận Tương tác (`MudDialog Trigger`)
 
 ```text
 +-----------------------------------------------------------------------------+

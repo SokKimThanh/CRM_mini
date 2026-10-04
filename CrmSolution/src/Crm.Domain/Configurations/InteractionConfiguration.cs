@@ -15,12 +15,15 @@ public class InteractionConfiguration : IEntityTypeConfiguration<Interaction>
             entity.Property(e => e.InteractedAt).HasDefaultValueSql("now()");
 
             entity.HasOne(d => d.Contact).WithMany(p => p.Interactions)
+                .HasForeignKey(d => d.ContactId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.Interactions);
+            entity.HasOne(d => d.Customer).WithMany(p => p.Interactions)
+                .HasForeignKey(d => d.CustomerId);
 
             entity.HasOne(d => d.Opportunity).WithMany(p => p.Interactions)
+                .HasForeignKey(d => d.OpportunityId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
         

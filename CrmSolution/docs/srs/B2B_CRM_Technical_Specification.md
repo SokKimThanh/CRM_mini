@@ -21,9 +21,9 @@
 | 
 
 | **Lớp (Layer)** | **Công nghệ / Thuật ngữ** | **Mô tả chi tiết** | 
-| **Runtime** | .NET 8 LTS | Framework nền tảng hiệu năng cao, hỗ trợ Cross-platform. | 
-| **Web Presentation** | ASP.NET Core Razor Pages | Rendering phía Server, kết hợp UI động nhẹ nhàng. | 
-| **User Interface** | Bootstrap 5 + HTMX + SortableJS + Chart.js | UI phản hồi nhanh qua HTMX (Single Page Experience không cần SPA framework nặng), kéo thả Kanban bằng SortableJS, hiển thị biểu đồ bằng Chart.js. | 
+| **Runtime** | .NET 10 | Framework nền tảng hiệu năng cao, hỗ trợ Cross-platform. |
+| **Web Presentation** | Blazor Server (Interactive Server) | Rendering phía Server, kết hợp UI động nhẹ nhàng. |
+| **User Interface** | Blazor Server + MudBlazor + Chart.js | UI phản hồi nhanh qua Blazor Server, giao diện MudBlazor, hiển thị biểu đồ bằng Chart.js. |
 | **ORM** | Entity Framework Core 8 (DB First) | Truy vấn và thao tác dữ liệu qua Scaffold Entity, đảm bảo tối ưu hóa SQL nguyên bản. | 
 | **Database** | SQLite (Development) / PostgreSQL 16 (Production) | SQLite linh hoạt khi dev local, PostgreSQL đáp ứng tính toàn vẹn và chịu tải tốt trên Prod. | 
 | **Background Jobs** | Hangfire | Quản lý tác vụ chạy ngầm, lập lịch tự động (Cron job) đồng bộ KiotViet và tính toán snapshot. | 
@@ -34,7 +34,7 @@
 ### 1.2 Mô hình Kiến trúc 3 Lớp (3-Tier Architecture)
 
 ```
-[ CrmApp.Web ] (Razor Pages, ViewModels, HTMX Endpoints, Identity)
+[ CrmApp.Web ] (Blazor Server, MudBlazor, CQRS Handlers, Identity)
        │
        ▼
 [ CrmApp.Business ] (Services, Business Rules, DTOs, Validators, KiotViet API Client)
@@ -64,7 +64,7 @@ CrmApp/
 │   │   ├── Contacts/
 │   │   │   └── Index.cshtml
 │   │   ├── Opportunities/
-│   │   │   ├── Kanban.cshtml (Kéo thả HTMX + SortableJS)
+│   │   │   ├── Kanban.razor (Kéo thả Blazor)
 │   │   │   ├── List.cshtml
 │   │   │   ├── Detail.cshtml
 │   │   │   └── Create.cshtml
@@ -85,7 +85,7 @@ CrmApp/
 │   │   ├── js/ (crm-kanban.js, crm-charts.js)
 │   │   ├── css/
 │   │   └── lib/
-│   ├── Controllers/ (API Endpoints cho HTMX & AJAX)
+│   ├── Features/ (CQRS Commands & Queries)
 │   └── Program.cs
 ├── CrmApp.Business/
 │   ├── Services/
@@ -126,7 +126,8 @@ CrmApp/
      
      ```
 
-   * Không sử dụng EF Core Migrations trong runtime dự án.
+   * Không sử dụng EF Core Migrations trong runtime dự án. Sử dụng phương pháp Database-First, tự thiết kế cấu trúc DDL SQL.
+   * Khi scaffold EF Core, bắt buộc phải loại trừ các bảng Identity (như `AspNetUsers`, `AspNetRoles`) thông qua tham số `--table` để không ghi đè dữ liệu cấu hình hệ thống.
 
 2. **Thời gian & Múi giờ:**
 
@@ -420,9 +421,9 @@ namespace CrmApp.Data.Enums
 
 * **Giao diện Kanban:** Đặt tại `/Opportunities/Kanban`. Hiển thị các cột tương ứng với các giai đoạn (`opportunity_stages`).
 
-* **Kéo thả qua HTMX & SortableJS:**
+* **Kéo thả qua Blazor:**
 
-  * Khi người dùng kéo thả card từ giai đoạn A sang B, SortableJS kích hoạt sự kiện và HTMX thực hiện gửi request POST về API `POST /api/opportunity/move`.
+  * Khi người dùng kéo thả card, Blazor kích hoạt sự kiện và gửi Command qua MediatR để xử lý đổi giai đoạn (Stage).
 
   * API xử lý:
 
@@ -623,7 +624,7 @@ Hệ thống áp dụng Phân quyền dựa trên Tác vụ và Vai trò (RBAC):
 
    * **Razor Pages (`CrmApp.Web`):** Tuyệt đối không chứa logic truy vấn DB direct hay logic tính toán tiền tệ. Chỉ injection `Services` và xử lý HTTP Context.
 
-   * **Service Layer (`CrmApp.Business`):** Đóng gói toàn bộ Business Logic. Nhận vào và trả về DTOs/ViewModels. Không phụ thuộc vào `HttpContext`.
+   * **CQRS & MediatR (`CrmApp.Business`):** Đóng gói toàn bộ Business Logic vào các Handlers. Các trang tương tác qua việc gửi Commands/Queries.
 
    * **Repository Layer (`CrmApp.Data`):** Chỉ làm nhiệm vụ truy xuất dữ liệu CRUD căn bản qua `AppDbContext`.
 
@@ -652,7 +653,7 @@ Tài nguyên: **01 Lập trình viên Full-stack (.NET)** | Ngân sách hạ t�
 ```
 [Tuần 1] ──► [Tuần 2] ──► [Tuần 3] ──► [Tuần 4] ──► [Tuần 5] ──► [Tuần 6] ──► [Tuần 7] ──► [Tuần 8]
  Setup DB      Customer      Product       Kanban        Quotes        Tasks &       Dashboard     KiotViet &
- & Frame work   & Contact    & Opp List    HTMX UI       & PDF         Hangfire      Snapshots     Deploy Prod
+ & Frame work   & Contact    & Opp List    Blazor UI       & PDF         Hangfire      Snapshots     Deploy Prod
 
 ```
 
@@ -660,7 +661,7 @@ Tài nguyên: **01 Lập trình viên Full-stack (.NET)** | Ngân sách hạ t�
 
 * **Tuần 1: Setup Khung Dự án & Database**
 
-  * Tạo Solution 3 lớp `.NET 8`, cấu hình Dependency Injection.
+  * Tạo Solution 3 lớp `.NET 10`, cấu hình Dependency Injection.
 
   * Viết script SQL tạo 15 bảng DB PostgreSQL, chạy `dbcontext scaffold` tạo Entity.
 
@@ -682,11 +683,11 @@ Tài nguyên: **01 Lập trình viên Full-stack (.NET)** | Ngân sách hạ t�
 
   * Viết Service tính toán giá trị và tỷ lệ thành công của deal.
 
-* **Tuần 4: Kanban Board & HTMX Integration**
+* **Tuần 4: Kanban Board & Blazor Integration**
 
-  * Xây dựng giao diện Kanban với Bootstrap 5 & SortableJS.
+  * Xây dựng giao diện Kanban với MudBlazor.
 
-  * Đấu nối HTMX cho thao tác kéo thả đổi Stage không reload trang.
+  * Đấu nối Blazor UI cho thao tác kéo thả đổi Stage.
 
   * Viết API `POST /api/opportunity/move` xử lý ghi lịch sử chuyển giai đoạn.
 
