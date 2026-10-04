@@ -14,7 +14,7 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 | **DOMAIN 3: FRONTEND & DESIGN SYSTEM** | Blazor Container/Presentation, Virtualize & Autocomplete, MudBlazor Token, 4 Trạng thái, Scoped CSS | `[K26]` – `[K35]` | 10 |
 | **DOMAIN 4: SECURITY & OBSERVABILITY** | Secret, OWASP, Defense-in-Depth IDOR & Data Ownership, Serilog JSON, Correlation ID & APM | `[K36]` – `[K44]` | 9 |
 | **DOMAIN 5: QA, ENVIRONMENT & DEVOPS** | Tháp kiểm thử, DoD, Pre-commit, Rollback, Idempotent Scripts, Sao lưu & Zero-downtime | `[K45]` – `[K57]` | 13 |
-| **DOMAIN 6: RUNBOOK & META-LEARNING** | Quy chuẩn Runbook, RCA sự cố, Two-Pass, Khám phá hộp cát & Dọn rác hiện trường | `[K58]` – `[K73]` | 16 |
+| **DOMAIN 6: RUNBOOK & META-LEARNING** | Phân tầng Runbook, RCA sự cố, Two-Pass, Khám phá hộp cát & Dọn rác hiện trường | `[K58]` – `[K73]` | 16 |
 | **DOMAIN 7: B2B CRM BUSINESS LOGIC** | Phân định thực thể CRM, Phễu bán hàng B2B, SLA Escalation Workflow & Báo cáo Funnel | `[K74]` – `[K77]` | 4 |
 | **TỔNG CỘNG** | **Toàn bộ hệ thống kỹ năng chuẩn hóa duy nhất** | **`[K01]` – `[K77]`** | **77** |
 
@@ -631,14 +631,18 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   1. Tạo đúng đường dẫn: `docs/sprints/sprint_<X>/...` hoặc `docs/setup/...`.
   2. Nếu phát hiện file nằm sai vị trí quy ước, thực hiện di dời (move) và cập nhật lại đường dẫn tham chiếu.
 
-**[K59] Objectives & Verification Targets (Mục tiêu & Chỉ số Đo lường)**
+**[K59] Objectives, Verification Targets & 2-Tier Sizing (Phân Cấp Quy Chuẩn Runbook)**
 - `[SEVERITY]`: 🟡 High
 - `[SPRINT]`: All
-- `THUMB_RULE`: Mỗi file Runbook bắt buộc phải có bảng Mục tiêu và bảng Chỉ số nghiệm thu định lượng ở đầu file.
-- `TRIGGER`: Bắt đầu soạn thảo Runbook mới.
+- `THUMB_RULE`: Chống phình to tài liệu không cần thiết (Anti-Bloat). Phân định rõ cấp độ Runbook ngay từ đầu; bắt buộc có bảng Mục tiêu và Chỉ số định lượng.
+- `TRIGGER`: Bắt đầu soạn thảo Runbook mới cho một đầu việc kỹ thuật.
 - `ACTION`:
-  1. Thiết lập **Bảng Objectives**: Nêu rõ 3-5 kết quả công việc cần đạt.
-  2. Thiết lập **Bảng Verification Targets**: Con số định lượng cụ thể (số bản ghi tạo ra, số test pass, thời gian chạy).
+  1. **Phân Tầng Runbook Cụ Thể**:
+     - **Cấp độ 1 - Standard / Micro Runbook (Task dưới 30 phút, Hotfix)**: Tối ưu tính tinh gọn ($< 120$ dòng). Chỉ gồm Mục tiêu $\rightarrow$ Chuỗi `Setup` $\rightarrow$ `Exec` $\rightarrow$ `Verify` $\rightarrow$ 1 lệnh `Rollback`. Không bắt buộc ma trận 5 lỗi hoặc phân tầng Learn nếu thao tác đơn giản.
+     - **Cấp độ 2 - Enterprise Runbook (Core Migration, Sprint Release, Tích hợp mới)**: Bắt buộc áp dụng đầy đủ $100\%$ các tiêu chí kiểm soát từ `[K58]` đến `[K67]`.
+  2. **Bảng Objectives & Verification Targets (Bắt buộc cho cả 2 cấp)**:
+     - Nêu rõ 3–5 kết quả công việc cụ thể cần đạt.
+     - Con số định lượng cụ thể (số bản ghi tạo ra, số test pass, thời gian chạy).
   3. Cuối Runbook phải có **Final Audit Checklist** đối chiếu từng chỉ số với Targets ban đầu.
 
 **[K60] Root Cause Analysis Enforcement (Phân tích Nguyên nhân Gốc rễ Sự cố)**
@@ -652,22 +656,27 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
   3. **Giải pháp khắc phục (Fix Action)**: Đã sửa bằng cách nào.
   4. **Xác nhận (Verification)**: Bằng chứng cho thấy lỗi đã biến mất.
 
-**[K61] Real Console Output Verification (Xác thực Bằng Kết quả Console Thật)**
+**[K61] Real Console Output Verification & Execution Placeholder (Xác Thực Bằng Kết Quả Console Thật)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
-- `THUMB_RULE`: Không ghi lại kết quả giả định hoặc kỳ vọng lý thuyết; chỉ lưu output thực tế từ màn hình console.
-- `TRIGGER`: Viết phần kiểm thử hoặc nghiệm thu trong Runbook.
-- `ACTION`: Chạy lệnh thật trên máy, sao chép nguyên văn output trả về và đặt trong khối code `text`.
+- `THUMB_RULE`: Không ghi lại kết quả giả định hoặc kỳ vọng lý thuyết. Áp dụng quy trình 2 pha nghiêm ngặt giữa Lập kế hoạch (Planning) và Thực thi (Execution).
+- `TRIGGER`: Viết phần kiểm thử hoặc nghiệm thu kết quả dòng lệnh trong Runbook.
+- `ACTION`:
+  1. **Pha 1 - Drafting / Planning (Chưa chạy terminal thật)**: Agent TUYỆT ĐỐI KHÔNG tự bịa ra log giả lập. Bắt buộc đặt thẻ giữ chỗ tường minh:
+     ```markdown
+     > [PENDING REAL EXECUTION: Chờ kỹ sư chạy lệnh và paste output xác thực vào đây]
+     ```
+  2. **Pha 2 - Execution / Verification (Đã chạy trên máy Dev/Staging)**: Chạy lệnh thật, sao chép nguyên văn output trả về từ terminal và thay thế vào thẻ giữ chỗ trong khối code `text`.
 
-**[K62] Step-by-Step Flow & Time Budget (Phân đoạn Dây chuyền & Ngân sách Thời gian)**
+**[K62] Step-by-Step Flow & Human Time Budget (Phân Đoạn Dây Chuyền & Ngân Sách Thời Gian Kỹ Sư)**
 - `[SEVERITY]`: 🔴 Critical
 - `[SPRINT]`: All
-- `THUMB_RULE`: Thiết kế quy trình thực thi một chiều theo dạng dây chuyền; ấn định ngân sách thời gian cho từng bước.
-- `TRIGGER`: Soạn thảo kịch bản triển khai hoặc hướng dẫn cài đặt.
+- `THUMB_RULE`: Thiết kế quy trình thực thi một chiều theo dạng dây chuyền; ngân sách thời gian phải tính theo thao tác của kỹ sư con người (Human Operator).
+- `TRIGGER`: Soạn thảo kịch bản triển khai hoặc hướng dẫn cài đặt trong Runbook.
 - `ACTION`:
   1. Phân chia rõ 4 giai đoạn độc lập: Setup $\rightarrow$ Execution $\rightarrow$ Verification $\rightarrow$ Rollback.
   2. Người thực thi chỉ cần thực hiện tuần tự từ trên xuống dưới mà không cần nhảy cóc bước.
-  3. Gán thời lượng thực hiện dự kiến (Time Budget) cho từng bước để kiểm soát tiến độ.
+  3. **Định lượng Human Time Budget**: Thời lượng dự kiến cho từng bước phải dựa trên tốc độ đọc hiểu, gõ lệnh, nhập mật khẩu và độ trễ mạng của một kỹ sư con người, cộng thêm $20\%$ biên độ an toàn (Buffer), tuyệt đối không tính theo tốc độ phản hồi tính bằng mili-giây của bot/AI background script.
 
 **[K63] Verification Checkpoints & Assertions (Chốt chặn & Khẳng định Đầu ra)**
 - `[SEVERITY]`: 🔴 Critical
