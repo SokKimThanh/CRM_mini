@@ -17,7 +17,8 @@ public class ContactConfiguration : IEntityTypeConfiguration<Contact>
             entity.Property(e => e.IsPrimary).HasDefaultValue(false);
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()");
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.Contacts);
+            entity.HasOne(d => d.Customer).WithMany(p => p.Contacts)
+                .HasForeignKey(d => d.CustomerId);
         
     }
 }

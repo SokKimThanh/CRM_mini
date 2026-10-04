@@ -13,11 +13,14 @@ public class StageHistoryConfiguration : IEntityTypeConfiguration<StageHistory>
 
             entity.Property(e => e.ChangedAt).HasDefaultValueSql("now()");
 
-            entity.HasOne(d => d.FromStage).WithMany(p => p.StageHistoryFromStages);
+            entity.HasOne(d => d.FromStage).WithMany(p => p.StageHistoryFromStages)
+                .HasForeignKey(d => d.FromStageId);
 
-            entity.HasOne(d => d.Opportunity).WithMany(p => p.StageHistories);
+            entity.HasOne(d => d.Opportunity).WithMany(p => p.StageHistories)
+                .HasForeignKey(d => d.OpportunityId);
 
             entity.HasOne(d => d.ToStage).WithMany(p => p.StageHistoryToStages)
+                .HasForeignKey(d => d.ToStageId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 ;
         

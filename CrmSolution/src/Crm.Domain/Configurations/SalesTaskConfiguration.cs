@@ -28,22 +28,27 @@ public class SalesTaskConfiguration : IEntityTypeConfiguration<SalesTask>
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("now()");
 
             entity.HasOne(d => d.Contact).WithMany(p => p.SalesTasks)
+                .HasForeignKey(d => d.ContactId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
 
             entity.HasOne(d => d.Customer).WithMany(p => p.SalesTasks)
+                .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade)
                 ;
 
             entity.HasOne(d => d.Opportunity).WithMany(p => p.SalesTasks)
+                .HasForeignKey(d => d.OpportunityId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
 
             entity.HasOne(d => d.Quote).WithMany(p => p.SalesTasks)
+                .HasForeignKey(d => d.QuoteId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
 
             entity.HasOne(d => d.RelatedProduct).WithMany(p => p.SalesTasks)
+                .HasForeignKey(d => d.RelatedProductId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
         

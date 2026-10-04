@@ -13,7 +13,8 @@ public class CustomerAssignmentConfiguration : IEntityTypeConfiguration<Customer
 
             entity.Property(e => e.AssignedAt).HasDefaultValueSql("now()");
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.CustomerAssignments);
+            entity.HasOne(d => d.Customer).WithMany(p => p.CustomerAssignments)
+                .HasForeignKey(d => d.CustomerId);
         
     }
 }

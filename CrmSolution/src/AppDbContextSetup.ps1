@@ -274,7 +274,7 @@ if ($bizBlocks.Count -lt 16) { throw "Chỉ extract được $($bizBlocks.Count)
 $generated = 0
 foreach ($b in $bizBlocks) {
     # Bỏ HasConstraintName để tránh warning khi EF Core validate
-    $cleanBody = $b.Body -replace '\.HasConstraintName\("[^"]+"\)', ''
+    $cleanBody = $b.Body
 
     $configContent = @"
 using Crm.Domain.Entities;

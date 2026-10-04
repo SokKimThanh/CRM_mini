@@ -15,10 +15,12 @@ public class QuoteItemConfiguration : IEntityTypeConfiguration<QuoteItem>
             entity.Property(e => e.SortOrder).HasDefaultValue(0);
 
             entity.HasOne(d => d.Product).WithMany(p => p.QuoteItems)
+                .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.SetNull)
                 ;
 
-            entity.HasOne(d => d.Quote).WithMany(p => p.QuoteItems);
+            entity.HasOne(d => d.Quote).WithMany(p => p.QuoteItems)
+                .HasForeignKey(d => d.QuoteId);
         
     }
 }
