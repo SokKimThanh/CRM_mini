@@ -802,7 +802,7 @@ Cần định dạng một thành phần giao diện?
 - `TRIGGER`: Khi user hỏi "Tại sao code này sinh lỗi/bug?".
 - `ACTION`: Tạo ngay 1 file unit test / script nhỏ bằng in-memory DB để chạy và lấy console output làm bằng chứng. Bắt lỗi thực tế và đưa RCA (Root Cause Analysis).
 
-**[K71] Clean Test Artifacts (Dọn dẹp rác hậu kiểm thử)**
+**[K72] Clean Test Artifacts (Dọn dẹp rác hậu kiểm thử)**
 - `[SEVERITY]`: 🟡 High
 - `[SPRINT]`: All
 - `THUMB_RULE`: Không để lại dấu vết sandbox trong codebase chính.
@@ -810,3 +810,108 @@ Cần định dạng một thành phần giao diện?
 - `ACTION`:
   1. Xóa toàn bộ file test, log, txt vừa sinh ra phục vụ quá trình dò lỗi (VD: `SchemaTest.cs`, `ef_model_debug.txt`).
   2. Revert các cài đặt package tạm (như `Microsoft.EntityFrameworkCore.InMemory`) nếu không phục vụ mục đích test lâu dài của dự án.
+
+## BLOCK 21: [AI_META_COGNITION] - HỆ ĐIỀU HÀNH TƯ DUY KỸ SƯ
+
+**[K73] 10 Bước Tư Duy Bắt Buộc (Core Engineering Mindset)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: KHÔNG BAO GIỜ viết nháp code (Drafting) ngay lập tức. Phải chạy qua 10 bước màng lọc tư duy trước khi sinh code.
+- `TRIGGER`: Nhận mọi task từ User.
+- `ACTION`:
+  1. **Requirement Analysis:** Hiểu tại sao phải làm tính năng này.
+  2. **Domain Modeling:** Nhận diện đối tượng nghiệp vụ.
+  3. **Business Process Analysis:** Đặt tính năng vào chuỗi quy trình kinh doanh.
+  4. **Task Breakdown:** Chia nhỏ công việc thành các bước thực thi < 30 phút.
+  5. **Change Impact Analysis:** Đánh giá rủi ro ảnh hưởng hệ thống.
+  6. **Deep Audit:** Rà soát lỗ hổng tiềm ẩn.
+  7. **Decision Making / Trade-off Analysis:** Phân tích ưu/nhược và đề xuất phương án tối ưu.
+  8. **Validation & Verification:** Tự thiết lập checkpoints để nghiệm thu.
+  9. **Self-Review:** Tự kiểm tra chéo (Cross-check) code của chính mình.
+  10. **Lesson Learned:** Ghi chú lại lỗi và bài học sau khi hoàn thành.
+
+## BLOCK 22: [CRM_DOMAIN_EXPERTISE] - NGHIỆP VỤ B2B CRM
+
+**[K74] Khung Quản lý Đối tượng (CRM Domain)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Phân định rạch ròi các đối tượng cốt lõi.
+- `TRIGGER`: Phân tích nghiệp vụ CRM, Code DB/Entity.
+- `ACTION`:
+  - Phân biệt rõ sự khác biệt giữa **Lead** (Tiềm năng chưa định danh), **Contact** (Người liên hệ), **Account** (Khách hàng doanh nghiệp), **Opportunity** (Cơ hội bán hàng).
+  - Đưa mọi Opportunity vào một **Sales Pipeline** cụ thể.
+
+**[K75] Quy trình và Hành trình Khách hàng (CRM Operations)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không thiết kế luồng cụt.
+- `TRIGGER`: Code các chức năng liên quan đến chăm sóc khách hàng.
+- `ACTION`:
+  - Luôn cài đặt **Lead Assignment** (Chia số tự động vòng lặp/Round-robin).
+  - Tạo luồng **Follow-up** (Chăm sóc nhắc nhở).
+  - Thiết kế **Customer Journey** chuẩn B2B: Quote → Order → Invoice.
+
+**[K76] Tự động hóa và Cảnh báo (CRM Automation & SLA)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: B2B CRM phải có cảnh báo tự động.
+- `TRIGGER`: Viết logic nhắc nhở, tạo Job/Workflow.
+- `ACTION`: Thiết lập cấu hình **SLA** (Thời gian cam kết phản hồi). Nếu trễ SLA phải kích hoạt **Escalation** (Chuyển cấp) thông qua **Auto Workflow** để báo động lên quản lý.
+
+**[K77] Đo lường và Báo cáo (CRM KPI & Reporting)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Dữ liệu sinh ra là để đo lường. Không đổi status mù quáng.
+- `TRIGGER`: Thiết kế Database, viết API cập nhật Status.
+- `ACTION`:
+  - Phải lưu giữ vết thay đổi (History tracking) tại mỗi state.
+  - Thiết kế dữ liệu phục vụ tính toán: **Conversion Rate** (Tỷ lệ chuyển đổi), **Win Rate** (Tỷ lệ thắng), **Revenue Forecast** (Dự báo doanh thu).
+  - Phục vụ xuất bảng **Funnel Report** và **Retention Report**.
+
+## BLOCK 23: [ENTERPRISE_ARCHITECTURE_UPGRADES] - CHUẨN KIẾN TRÚC MỞ RỘNG
+
+**[K78] CQRS Strict Boundaries (Ranh giới Logic)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không để logic nghiệp vụ chạy loạn.
+- `TRIGGER`: Khởi tạo luồng CQRS, tạo Controller.
+- `ACTION`: Repositories CHỈ dùng cho CRUD cơ bản. Toàn bộ Business Logic (Phân quyền, tính toán) phải nằm trong Handlers. Pages/Controllers chỉ gửi Command/Query qua Mediator.
+
+**[K79] SQL Version Control Strategy**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Script SQL update DB phải có version, không sinh lẻ tẻ vô danh.
+- `TRIGGER`: Tạo script SQL thay đổi DDL (Thêm bảng/Thêm cột).
+- `ACTION`: Đặt tên file script tuân thủ quy tắc đánh version tuần tự (Ví dụ: `V1.0.1__Create_Lead_Table.sql`) để tracking khi deploy lên Staging/Production.
+
+**[K80] Outbox Pattern & Background Jobs**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không block thread chính của hệ thống.
+- `TRIGGER`: Viết logic gửi Email, Thông báo, Đồng bộ KiotViet.
+- `ACTION`: Mọi tác vụ gọi API hệ thống ngoài hoặc Gửi mail PHẢI đẩy vào Hangfire/Background Queue. Tuyệt đối không chạy đồng bộ làm treo request của user.
+
+**[K81] Data Ownership & Entity Audit Trail**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không thiết kế entity vô chủ.
+- `TRIGGER`: Tạo thiết kế DB / Entity mới.
+- `ACTION`:
+  - Mọi thực thể kinh doanh cốt lõi (Khách hàng, Báo giá, Cơ hội) PHẢI có trường Owner (Người phụ trách) và Team.
+  - Phân quyền phải đệ quy theo cấp bậc phòng ban. Bắt buộc có cơ chế lưu lịch sử thay đổi (Giá trị cũ -> mới).
+
+**[K82] Secure Insecure Direct Object Reference (Ngừa IDOR)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không bao giờ tin tưởng ID gửi từ Client.
+- `TRIGGER`: Mỗi khi thực thi `GetById(id)` hoặc `Update(id)`.
+- `ACTION`: Handlers BẮT BUỘC phải check `OwnerId` hoặc System Permissions xem User hiện tại có quyền đọc/sửa ID đó không trước khi lấy data.
+
+**[K83] Blazor UI Virtualization & Cartesian Explosion Prevention**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Tránh bùng nổ dữ liệu và treo RAM.
+- `TRIGGER`: Truy vấn EF Core với Include hoặc render danh sách dài trên UI.
+- `ACTION`:
+  1. EF Core: Truy vấn đọc có từ 2 `Include` trở lên bắt buộc dùng `.AsSplitQuery()`.
+  2. Blazor: Không bao giờ render `<select>` hoặc `<MudSelect>` cho list > 100 dòng. Bắt buộc dùng `<MudAutocomplete>` hoặc thẻ `<Virtualize>`.
