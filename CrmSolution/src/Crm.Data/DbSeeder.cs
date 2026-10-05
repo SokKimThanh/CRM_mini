@@ -12,8 +12,8 @@ public static class DbSeeder
         using var scope = services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-        var dbContext   = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var logger      = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbSeeder");
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("DbSeeder");
 
         foreach (var roleName in new[] { "ADMIN", "MANAGER", "SALES", "ACCOUNTANT" })
         {

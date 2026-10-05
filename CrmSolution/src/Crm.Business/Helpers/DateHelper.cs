@@ -13,8 +13,8 @@ public static class DateHelper
 
     public static DateTime ToVietnamTime(DateTime utc)
     {
-        var normalizedUtc = utc.Kind == DateTimeKind.Unspecified 
-            ? DateTime.SpecifyKind(utc, DateTimeKind.Utc) 
+        var normalizedUtc = utc.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(utc, DateTimeKind.Utc)
             : utc.ToUniversalTime();
         return TimeZoneInfo.ConvertTimeFromUtc(normalizedUtc, VietnamTz);
     }

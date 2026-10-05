@@ -87,16 +87,32 @@ public partial class Customer
     public bool? IsActive { get; set; }
 
     [Column("is_deleted")]
-    public bool? IsDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
     [Column("deleted_at")]
     public DateTime? DeletedAt { get; set; }
 
     [Column("created_at")]
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     [Column("updated_at")]
     public DateTime? UpdatedAt { get; set; }
+
+    // --- Các cột quản trị CRM Day 6 (K20, K21, K39) ---
+    [Column("tenant_id")]
+    public Guid TenantId { get; set; }
+    [Column("owner_id")]
+    public Guid? OwnerId { get; set; }
+    [Column("team_id")]
+    public Guid? TeamId { get; set; }
+    [Column("deleted_by")]
+    public Guid? DeletedBy { get; set; }
+    [Column("updated_by")]
+    public Guid? UpdatedBy { get; set; }
+
+    // Map với PostgreSQL xmin Concurrency Token (K19)
+    [Column("xmin", TypeName = "xid")]
+    public uint RowVersion { get; set; }
 
     [InverseProperty("Customer")]
     public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
@@ -115,4 +131,10 @@ public partial class Customer
 
     [InverseProperty("Customer")]
     public virtual ICollection<SalesTask> SalesTasks { get; set; } = new List<SalesTask>();
+
+    // ============================================
+    // [K16] Navigation 2 chiều tường minh
+    // ============================================
+    public Team? Team { get; set; }
+    public ApplicationUser? Owner { get; set; }
 }

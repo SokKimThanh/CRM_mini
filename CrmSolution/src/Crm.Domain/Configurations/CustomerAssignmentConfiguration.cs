@@ -9,12 +9,12 @@ public class CustomerAssignmentConfiguration : IEntityTypeConfiguration<Customer
     public void Configure(EntityTypeBuilder<CustomerAssignment> entity)
     {
 
-            entity.HasKey(e => e.Id).HasName("customer_assignments_pkey");
+        entity.HasKey(e => e.Id).HasName("customer_assignments_pkey");
 
-            entity.Property(e => e.AssignedAt).HasDefaultValueSql("now()");
+        entity.Property(e => e.AssignedAt).HasDefaultValueSql("now()");
 
-            entity.HasOne(d => d.Customer).WithMany(p => p.CustomerAssignments)
-                .HasForeignKey(d => d.CustomerId);
-        
+        entity.HasOne(d => d.Customer).WithMany(p => p.CustomerAssignments)
+            .HasForeignKey(d => d.CustomerId);
+
     }
 }

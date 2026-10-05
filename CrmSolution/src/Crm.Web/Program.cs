@@ -69,6 +69,15 @@ builder.Services.AddControllers();
 
 builder.Services.AddLogging();
 
+// [K12] MediatR Handlers registration
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(Crm.Business.Customers.Commands.CreateCustomerCommand).Assembly));
+
+// [K16, K39] Repositories & Security Context (Đăng ký đúng Scoped)
+builder.Services.AddScoped<Crm.Data.Repositories.ICustomerRepository, Crm.Data.Repositories.CustomerRepository>();
+builder.Services.AddScoped<Crm.Domain.Common.Interfaces.ITenantProvider, Crm.Web.Services.HttpTenantProvider>();
+builder.Services.AddScoped<Crm.Domain.Common.Interfaces.ICurrentUser, Crm.Web.Services.HttpCurrentUser>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

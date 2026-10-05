@@ -9,11 +9,11 @@ public class KiotvietSyncLogConfiguration : IEntityTypeConfiguration<KiotvietSyn
     public void Configure(EntityTypeBuilder<KiotvietSyncLog> entity)
     {
 
-            entity.HasKey(e => e.Id).HasName("kiotviet_sync_logs_pkey");
+        entity.HasKey(e => e.Id).HasName("kiotviet_sync_logs_pkey");
 
-            entity.Property(e => e.RecordsFailed).HasDefaultValue(0);
-            entity.Property(e => e.RecordsSynced).HasDefaultValue(0);
-            entity.Property(e => e.StartedAt).HasDefaultValueSql("now()");
-        
+        entity.Property(e => e.RecordsFailed).HasDefaultValue(0);
+        entity.Property(e => e.RecordsSynced).HasDefaultValue(0);
+        entity.Property(e => e.StartedAt).HasDefaultValueSql("now()");
+
     }
 }
