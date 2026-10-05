@@ -1,22 +1,23 @@
-# Dự án CRM Mini
+# CrmSolution - Hệ thống B2B CRM
 
 Dự án CRM (Quản trị Quan hệ Khách hàng) dành cho mô hình B2B.
 
-## 1. Hệ thống Nhánh (Git Flow)
-Dự án áp dụng quy trình quản lý mã nguồn tự động, bao gồm 4 nhánh chính:
-- `main`: Chứa mã nguồn Production (chỉ dành cho bản chính thức).
-- `staging`: Môi trường kiểm thử (Testing/QA).
-- `develop`: Nhánh phát triển chính (tích hợp các tính năng mới).
-- `docs`: Chuyên lưu trữ tài liệu, quy trình, cấu trúc Sprint.
+## 1. Tech Stack & Runtime Manifest
+- **Framework**: .NET 10, C# 13, Blazor Server/WASM.
+- **Cơ sở dữ liệu**: PostgreSQL.
+- **Xử lý nền**: Hangfire.
+- **Kiến trúc**: CQRS với MediatR, Repository Pattern.
 
-**Quy tắc tạo nhánh phụ (Làm việc hàng ngày):**
-- Tính năng mới: `feature/ten-tinh-nang`
-- Sửa lỗi thường: `bugfix/ten-loi`
-- Sửa lỗi khẩn cấp (trên main): `hotfix/ten-loi`
-- Đóng gói phát hành: `release/vX.X.X`
+## 2. Cây Thư Mục Cấp 1 & Vai Trò
+- `CrmSolution/`: Thư mục mã nguồn chính của ứng dụng backend và frontend.
+- `CrmSolution/docs/`: Chuyên lưu trữ tài liệu đặc tả, Runbook, sổ nợ kỹ thuật và nhật ký hàng ngày.
+- `.git/`: Quản lý phiên bản mã nguồn Git (với các nhánh main, staging, develop).
+- `AGENTS.md`: Hệ điều hành chỉ thị bắt buộc dành cho AI/Agent.
 
-## 2. Tài liệu Dự án
-Để giữ cho file README này ngắn gọn, toàn bộ tài liệu chi tiết (SRS, Kế hoạch) đã được tách nhỏ và chuyển vào thư mục `docs/`. Bạn có thể tham khảo theo cấu trúc sau:
-- Mọi tài liệu đặc tả, tiến trình công việc, thiết kế hệ thống xem tại: [Thư mục docs](./docs)
+## 3. Mục Lục Chỉ Mục Nóng (Hot-Links)
+- [Data Dictionary (Từ điển Dữ liệu)](./CrmSolution/docs/specs/data_dictionary.md)
+- [API Contracts (Đặc tả Giao tiếp API)](./CrmSolution/docs/specs/api_contracts.md)
+- [Runbook Mới Nhất (Day 6 - Sprint 1)](./CrmSolution/docs/sprints/sprint_1/runbooks/day6_customer_repo_service.md)
 
-*(Ghi chú: Theo Kỹ năng K9, README.md luôn được giữ ngắn gọn dưới 1 trang. Mọi thông tin dài hơn sẽ được cắt vào thư mục `docs/`)*
+---
+*Ghi chú: README này tuân thủ chuẩn K11, ngắn gọn dưới 100 dòng.*

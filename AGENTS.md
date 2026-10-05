@@ -643,14 +643,15 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 
 ## DOMAIN 6: RUNBOOK STANDARDS & META-LEARNING (TIÊU CHUẨN RUNBOOK VÀ NĂNG LỰC AI)
 
-**[K58] Runbook Folder Compliance (Quy chuẩn Thư mục Runbook)**
+**[K58] Runbook Folder Compliance & Naming Convention (Quy chuẩn Thư mục và Đặt tên Tài liệu)**
 - `[SEVERITY]`: 🟡 High
 - `[SPRINT]`: All
-- `THUMB_RULE`: File tài liệu và mã nguồn phải nằm đúng cấu trúc cây thư mục quy định.
-- `TRIGGER`: Khi tạo file tài liệu, runbook hoặc script hỗ trợ.
+- `THUMB_RULE`: File tài liệu phải nằm đúng cấu trúc và tuân thủ định dạng tên chặt chẽ, dễ phân biệt. Hệ thống cần tự động dò tìm vị trí thư mục `docs/` để cấu hình đường dẫn tương đối.
+- `TRIGGER`: Khi tạo hoặc quản lý file tài liệu, runbook, nhật ký.
 - `ACTION`:
-  1. Tạo đúng đường dẫn: `docs/sprints/sprint_<X>/...` hoặc `docs/setup/...`.
-  2. Nếu phát hiện file nằm sai vị trí quy ước, thực hiện di dời (move) và cập nhật lại đường dẫn tham chiếu.
+  1. **Tự động dò tìm**: Agent phải quét toàn bộ codebase để tìm vị trí thực tế của thư mục `docs/` (ví dụ nó có thể nằm ở gốc hoặc trong `CrmSolution/docs/`). Mọi đường dẫn tham chiếu tài liệu (`docs/specs/`, `docs/sprints/`) sẽ tự động được ánh xạ tương đối theo vị trí gốc của thư mục `docs/` đã tìm thấy.
+  2. **Quy chuẩn đặt tên (Naming Convention)**: Bắt buộc thống nhất cách đặt tên tài liệu Runbook, nhật ký, báo cáo theo cú pháp: `day<X>_sprint_<Y>_<cong_viec_ngan_gon>.md` (Ví dụ: `day1_sprint_1_blazor_setup.md`). Yêu cầu: chữ thường, không dấu, dùng gạch dưới `_`, ngăn chặn các tên chung chung hoặc tiếng Việt có dấu làm rối loạn Git.
+  3. **Kiểm tra di dời**: Nếu phát hiện file sai vị trí quy ước (`docs/sprints/sprint_<X>/`, `docs/specs/`), tự động thực hiện di dời và sửa link tham chiếu.
 
 **[K59] Objectives, Verification Targets & 2-Tier Sizing (Phân Cấp Quy Chuẩn Runbook)**
 - `[SEVERITY]`: 🟡 High
