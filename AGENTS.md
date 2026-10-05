@@ -16,7 +16,8 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
 | **DOMAIN 5: QA, ENVIRONMENT & DEVOPS** | Tháp kiểm thử, DoD, Pre-commit, Rollback, Idempotent Scripts, Sao lưu & Zero-downtime | `[K45]` – `[K57]` | 13 |
 | **DOMAIN 6: RUNBOOK & META-LEARNING** | Phân tầng Runbook, RCA sự cố, Two-Pass, Khám phá hộp cát & Dọn rác hiện trường | `[K58]` – `[K73]` | 16 |
 | **DOMAIN 7: B2B CRM BUSINESS LOGIC** | Phân định thực thể CRM, Phễu bán hàng B2B, SLA Escalation Workflow & Báo cáo Funnel | `[K74]` – `[K77]` | 4 |
-| **TỔNG CỘNG** | **Toàn bộ hệ thống kỹ năng chuẩn hóa duy nhất** | **`[K01]` – `[K78]`** | **78** |
+| **DOMAIN 8: INTERVIEW & PORTFOLIO EXCELLENCE** | Đóng gói tư duy kiến trúc, phân tích đánh đổi (trade-off), phản biện bảo vệ thiết kế và kỹ năng thuyết trình | `[K79]` – `[K81]` | 3 |
+| **TỔNG CỘNG** | **Toàn bộ hệ thống kỹ năng chuẩn hóa duy nhất** | **`[K01]` – `[K81]`** | **81** |
 
 ---
 
@@ -849,3 +850,37 @@ Mọi thao tác đọc hiểu ngữ cảnh, lập kế hoạch, sinh mã nguồn
      - **Revenue Forecast (Dự báo doanh thu gia quyền)**:
        $$\text{Weighted Forecast} = \sum (\text{Giá trị Deal} \times \text{Xác suất thành công của Stage})$$
   3. Cung cấp dữ liệu sẵn sàng cho Báo cáo Phễu (Funnel Report) và Báo cáo Tỷ lệ Duy trì (Retention Report) qua các bảng Snapshot ngầm ([K24]).
+
+---
+
+## DOMAIN 8: INTERVIEW & PORTFOLIO EXCELLENCE (NGHỆ THUẬT PHỎNG VẤN & XÂY DỰNG HỒ SƠ NĂNG LỰC)
+
+**[K79] Architectural Trade-off Articulation (Phân Tích Đánh Đổi Kiến Trúc)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Không bao giờ nói một công nghệ/pattern là "tốt nhất tuyệt đối". Mọi quyết định kiến trúc phức tạp (CQRS, Multi-tenant) bắt buộc phải đi kèm lý luận "Được gì (Pros) / Mất gì (Cons)".
+- `TRIGGER`: Khi giải thích mã nguồn, viết tài liệu hoặc thiết kế tính năng mới.
+- `ACTION`:
+  1. Phân tích chi phí trả trước (Upfront Cost): Thời gian code, số lượng file, độ khó bảo trì cho Fresher.
+  2. Phân tích lợi ích dài hạn (Long-term ROI): Khả năng mở rộng (Scale), bảo mật (Security), chống rác dữ liệu.
+  3. Chốt lại bằng ngữ cảnh: "Vì mục tiêu của dự án là B2B SaaS, sự đánh đổi này là hoàn toàn xứng đáng."
+
+**[K80] Elevator Pitch & Keyword Injection (Trình Bày Tốc Chiến Bọc Từ Khóa)**
+- `[SEVERITY]`: 🟡 High
+- `[SPRINT]`: All
+- `THUMB_RULE`: Khi tóm tắt một tính năng, phải gói gọn trong 2-3 câu chứa các keyword "đắt giá" (Buzzwords có chiều sâu) mà Technical Lead muốn nghe.
+- `TRIGGER`: Khi kết thúc một tính năng cốt lõi (Core feature) hoặc được yêu cầu tóm tắt công việc.
+- `ACTION`:
+  1. Tránh mô tả CRUD nhàm chán ("Em viết hàm Get, Post").
+  2. Sử dụng "Văn mẫu" bọc Keyword: "Để giải quyết bài toán [A], em áp dụng mô hình [B], kết hợp kỹ thuật [C] để phòng chống rủi ro [D], đồng thời đảm bảo [E]."
+  3. (VD: "Để giải quyết bài toán SaaS nhiều công ty thuê, em tách luồng Read/Write qua CQRS, kết hợp IDOR 2 lớp để chống rò rỉ dữ liệu, đảm bảo Test Coverage 100% bằng Moq").
+
+**[K81] Defensive Interviewing (Phòng Thủ & Tự Phản Biện Áp Lực)**
+- `[SEVERITY]`: 🔴 Critical
+- `[SPRINT]`: All
+- `THUMB_RULE`: Luôn chuẩn bị sẵn sàng cho câu hỏi: "Tại sao em làm phức tạp hóa vấn đề như vậy? Làm cách đơn giản hơn không được sao?"
+- `TRIGGER`: Khi áp dụng các thiết kế có tính "Over-engineering" (như CQRS, Event-Driven) vào các tính năng có vẻ đơn giản.
+- `ACTION`:
+  1. Tự đặt mình vào vai người phỏng vấn khó tính.
+  2. Tạo bộ câu hỏi Q&A phản biện (Ví dụ: "Dùng CQRS cho một bảng Customer có quá thừa thãi không?").
+  3. Lập luận phòng thủ: Đồng ý với người phỏng vấn (Em đồng ý nếu dự án nhỏ thì dư thừa), nhưng đưa ra tầm nhìn xa (Nhưng đây là core engine của CRM SaaS, nó cần độ cách ly (Isolation) và mở rộng (Extensibility) từ Day 1).
